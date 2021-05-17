@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import 'tailwindcss/tailwind.css'
-import { Provider } from "next-auth/client";
+import { UserProvider } from '@auth0/nextjs-auth0';
 import { ApolloProvider } from "@apollo/client";
 import client from "@lib/apollo-client";
 
@@ -35,9 +35,9 @@ export default function MyApp({ Component, pageProps }) {
         <meta name="theme-color" content="#317EFB" />
       </Head>
       <ApolloProvider client={client}>
-        <Provider session={pageProps.session}>
+        <UserProvider>
           <Component {...pageProps} />
-        </Provider>
+        </UserProvider>,
       </ApolloProvider>
     </>
   )
