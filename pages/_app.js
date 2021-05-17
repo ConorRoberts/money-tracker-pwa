@@ -1,5 +1,8 @@
 import Head from 'next/head'
-import '../styles/globals.css'
+import 'tailwindcss/tailwind.css'
+import { Provider } from "next-auth/client";
+import { ApolloProvider } from "@apollo/client";
+import client from "@lib/apollo-client";
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -13,7 +16,7 @@ export default function MyApp({ Component, pageProps }) {
         />
         <meta name="description" content="Description" />
         <meta name="keywords" content="Keywords" />
-        <title>Next.js PWA Example</title>
+        <title>Money Tracker PWA</title>
 
         <link rel="manifest" href="/manifest.json" />
         <link
@@ -31,7 +34,11 @@ export default function MyApp({ Component, pageProps }) {
         <link rel="apple-touch-icon" href="/apple-icon.png"></link>
         <meta name="theme-color" content="#317EFB" />
       </Head>
-      <Component {...pageProps} />
+      <ApolloProvider client={client}>
+        <Provider session={pageProps.session}>
+          <Component {...pageProps} />
+        </Provider>
+      </ApolloProvider>
     </>
   )
 }
