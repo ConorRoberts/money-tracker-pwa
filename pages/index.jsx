@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="bg-indigo-300 flex justify-center items-center h-screen">
       <p className="text-3xl font-bold">
-        Adrian has genital warts
+        App
       </p>
 
       <Button>

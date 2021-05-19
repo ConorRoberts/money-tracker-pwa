@@ -5,6 +5,14 @@ const ROUTES = [
     path: "/",
     text: "Home",
   },
+  {
+    path: "/form",
+    text: "Form",
+  },
+  {
+    path: "/api/auth/login",
+    text: "Login",
+  },
 ];
 
 export default function Navigation() {
