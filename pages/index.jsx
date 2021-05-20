@@ -29,18 +29,31 @@ export default function Home() {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="bg-indigo-300 flex justify-center items-center h-screen">
-      <p className="text-3xl font-bold">App</p>
-
-      {user && (
-        <div>
-          Hello User
-          <p>In the past {timePeriod}, you spend $100</p>
+    <div className="bg-gray-900 flex items-center h-screen flex-col">
+      <p className="text-4xl text-white font-sans">$ 12,567</p>
+      <div className="flex flex-row gap-x-5">
+        <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
+          <p className="text-gray-500">Inc:</p>
+          <p className="text-green-500">$15,500</p>
         </div>
-      )}
-      <Button>
-        <Link href="/api/auth/login">Login</Link>
-      </Button>
+        <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
+          <p className="text-gray-500">Exp:</p>
+          <p className="text-red-500">$2,933</p>
+        </div>
+      </div>
+
+      {/* {array.map((e) => (
+        //code here
+      ))} */}
+
+      <div name="graph">
+        <p className="text-9xl text-white text-bold">GRAPH</p>
+      </div>
+
+      <div name="transactions" className="box-content h-24 w-3/4 p-4 border-2 border-gray-800 rounded-full py-3 px-6 bg-gray-700">
+
+      </div>
+
     </div>
   );
 }
