@@ -5,6 +5,8 @@ import { Button } from "@components/FormComponents";
 import { Select } from "@components/FormComponents";
 import { useUser } from "@auth0/nextjs-auth0";
 import { useRouter } from "next/router";
+import Loading from "@components/Loading";
+import { Checkbox } from "@components/FormComponents";
 
 const CREATE_TRANSACTION = gql`
   mutation createTransaction($transaction: TransactionInput!) {
@@ -25,6 +27,8 @@ const Form = () => {
     type: "",
     taxable: false,
   });
+
+  console.log(form.taxable);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -51,13 +55,17 @@ const Form = () => {
     setForm({ ...form, [name]: value });
   };
 
+  if (isLoading) return <Loading />;
+
+  // if (!isLoading && !user) router.push("/");
+
   return (
     <div>
       <form
         className="lg:w-1/3 lg:mx-auto bg-gray-200 flex flex-col gap-4 p-5 m-2"
         onSubmit={handleSubmit}
       >
-        <Select name="type" onChange={handleChange}>
+        <Select name="type" onChange={handleChange} className="bg-white">
           <option value="revenue">Revenue</option>
           <option value="expense">Expense</option>
         </Select>
@@ -84,12 +92,11 @@ const Form = () => {
         />
         <div className="flex flex-col items-center">
           <h2>Is this taxable?</h2>
-          <Input
-            className="w-10 h-10"
-            type="checkbox"
+          <Checkbox
+            className="w-10 h-10 bg-white"
             name="taxable"
             value={form.taxable}
-            onChange={() => setForm({ ...form, taxable: !form.taxable })}
+            onClick={() => setForm({ ...form, taxable: !form.taxable })}
           />
         </div>
         <div className="flex justify-center">

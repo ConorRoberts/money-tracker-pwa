@@ -1,5 +1,5 @@
 import { useUser } from "@auth0/nextjs-auth0";
-import { Button } from "@components/FormComponents";
+import { Button, Select } from "@components/FormComponents";
 import Link from "next/link";
 import { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
@@ -25,6 +25,7 @@ export default function Home() {
   const [timePeriod, setTimePeriod] = useState("week");
 
   const { data } = useQuery(GET_USER_DATA, { variables: { id: user?.sub } });
+  const array = ["stinky", "monkey", "poo", "ape", "gorilla"];
 
   if (isLoading) return <Loading />;
 
@@ -34,7 +35,14 @@ export default function Home() {
 
       {user && (
         <div>
-          Hello User
+          <Select onChange={(e) => setTimePeriod(e.target.value)}>
+            {["day", "week", "month", "year"].map((e) => (
+              <option key={e} value={e}>
+                {e}
+              </option>
+            ))}
+          </Select>
+          Hello {user?.nickname}
           <p>In the past {timePeriod}, you spend $100</p>
         </div>
       )}
