@@ -1,19 +1,4 @@
-import User from "@models/User";
 import Transaction from "@models/transaction";
-
-/**
- * Formats mongoose user document into something GQL can use
- * @param {*} userDocument 
- * @returns 
- */
-const formatUser = (userDocument) => {
-    const user = userDocument._doc;
-    return {
-        ...user,
-        id: userDocument.id,
-        created_at: new Date(user.created_at).toISOString()
-    };
-}
 
 /**
  * Formats mongoose transaction document into something GQL can use
@@ -31,54 +16,27 @@ const formatTransaction = (transactionDocument) => {
 
 const resolvers = {
     Query: {
-        get_user: async (_, { user_id }) => {
+        get_transaction: async (_, { id }) => {
             try {
-                const user = await User.findOne({ _id: user_id })
-                return user;
-            } catch (error) {
-                console.error(error);
-            }
-
-            return null;
-        },
-        get_transaction: async (_, { transaction_id }) => {
-            try {
-                const transaction = await Transaction.findOne({ _id: transaction_id })
+                const transaction = await Transaction.findOne({ _id: id })
                 return transaction;
             } catch (error) {
                 console.error(error);
             }
             return null;
         },
-        get_all_users: async () => {
+        get_user_transactions: async (_, { id }) => {
+            if (!id) return [];
             try {
-                const users = await User.find({});
-                return users.map(e => formatUser(e));
-            } catch (error) {
-                console.log(error);
-            }
-
-            return null;
-        }
-    },
-    Mutation: {
-        create_user: async (_, { user }) => {
-            try {
-                const newUser = new User({ ...user });
-                await newUser.save();
-                return formatUser(newUser);
+                const transactions = await Transaction.find({ creator: id });
+                return transactions.map(e => formatTransaction(e))
             } catch (error) {
                 console.error(error);
             }
-
-            return null;
-        },
-        update_user: () => {
-            return null;
-        },
-        delete_user: () => {
-            return null;
-        },
+            return [];
+        }
+    },
+    Mutation: {
         create_transaction: async (_, { transaction }) => {
             try {
                 const newTransaction = new Transaction({ ...transaction });

@@ -1,14 +1,13 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
-const paymentSchema = new Schema({
+const transactionSchema = new Schema({
     note: {
         type: String,
         default: "Payment"
     },
     type: {
         type: String,
-        enum: ["revenue", "expense"],
         default: "revenue"
     },
     category: {
@@ -20,13 +19,17 @@ const paymentSchema = new Schema({
         default: 0
     },
     creator: {
-        type: Schema.Types.ObjectId,
-        ref: "User"
+        type: String,
+        default: "Unknown"
     },
     created_at: {
         type: Date,
         default: Date.now()
+    },
+    taxable: {
+        type: Boolean,
+        default: false
     }
 })
 
-export default mongoose.models.Payment ?? mongoose.model("Payment", paymentSchema);
+export default mongoose.models.Transaction ?? mongoose.model("Transaction", transactionSchema);
