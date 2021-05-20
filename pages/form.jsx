@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 
 const CREATE_TRANSACTION = gql`
   mutation createTransaction($transaction: TransactionInput!) {
-    create_transaction(transaction:$transaction) {
+    create_transaction(transaction: $transaction) {
       id
     }
   }
@@ -53,46 +53,44 @@ const Form = () => {
 
   return (
     <div>
-      <form className="lg:w-1/2 lg:mx-auto" onSubmit={handleSubmit}>
-        <div className="flex gap-3">
-          <Select name="type" onChange={handleChange} className="flex-1">
-            <option value="revenue">Revenue</option>
-            <option value="expense">Expense</option>
-          </Select>
+      <form
+        className="lg:w-1/3 lg:mx-auto bg-gray-200 flex flex-col gap-4 p-5 m-2"
+        onSubmit={handleSubmit}
+      >
+        <Select name="type" onChange={handleChange}>
+          <option value="revenue">Revenue</option>
+          <option value="expense">Expense</option>
+        </Select>
+        <Input
+          placeholder="Amount"
+          type="number"
+          name="amount"
+          onChange={handleChange}
+          value={form.amount}
+        />
+        <Input
+          placeholder="Note"
+          type="text"
+          name="note"
+          onChange={handleChange}
+          value={form.note}
+        />
+        <Input
+          placeholder="Category"
+          type="text"
+          name="category"
+          onChange={handleChange}
+          value={form.category}
+        />
+        <div className="flex flex-col items-center">
+          <h2>Is this taxable?</h2>
           <Input
-            className="flex-1"
-            placeholder="Amount"
-            type="number"
-            name="amount"
-            onChange={handleChange}
-            value={form.amount}
+            className="w-10 h-10"
+            type="checkbox"
+            name="taxable"
+            value={form.taxable}
+            onChange={() => setForm({ ...form, taxable: !form.taxable })}
           />
-        </div>
-        <div className="flex flex-col gap-5">
-          <Input
-            placeholder="Note"
-            type="text"
-            name="note"
-            onChange={handleChange}
-            value={form.note}
-          />
-          <Input
-            placeholder="Category"
-            type="text"
-            name="category"
-            onChange={handleChange}
-            value={form.category}
-          />
-          <div className="flex justify-center">
-            <h2>Is this taxable?</h2>
-            <Input
-              className="w-10 h-10"
-              type="checkbox"
-              name="taxable"
-              value={form.taxable}
-              onChange={() => setForm({ ...form, taxable: !form.taxable })}
-            />
-          </div>
         </div>
         <div className="flex justify-center">
           <Button type="submit">Submit</Button>
