@@ -3,8 +3,21 @@ import { useMutation, gql } from "@apollo/client";
 import { Input } from "@components/FormComponents";
 import { Button } from "@components/FormComponents";
 import { Select } from "@components/FormComponents";
+import { useUser } from "@auth0/nextjs-auth0";
+import { useRouter } from "next/router";
+
+const CREATE_TRANSACTION = gql`
+  mutation createTransaction($transaction: TransactionInput!) {
+    create_transaction(transaction:$transaction) {
+      id
+    }
+  }
+`;
 
 const Form = () => {
+  const router = useRouter();
+  const { user, isLoading } = useUser();
+  const [createTransaction] = useMutation(CREATE_TRANSACTION);
   const [form, setForm] = useState({
     note: "",
     amount: "",
@@ -12,10 +25,25 @@ const Form = () => {
     type: "",
     taxable: false,
   });
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    console.log(form);
+    try {
+      createTransaction({
+        variables: {
+          transaction: {
+            ...form,
+            amount: +form.amount,
+            creator: user.sub,
+          },
+        },
+      });
+
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleChange = (e) => {

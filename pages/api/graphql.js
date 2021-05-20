@@ -1,7 +1,7 @@
 import { ApolloServer } from "apollo-server-micro";
+import dbConnect from "@utils/dbConnect";
 import typeDefs from "@graphql/schema";
 import resolvers from "@graphql/resolvers";
-import dbConnect from "@utils/dbConnect";
 
 const apolloServer = new ApolloServer({ typeDefs, resolvers, context: async () => await dbConnect() });
 
