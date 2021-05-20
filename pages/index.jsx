@@ -30,25 +30,21 @@ export default function Home() {
   if (isLoading) return <Loading />;
 
   return (
-    <div className="bg-indigo-300 flex justify-center items-center h-screen">
-      <p className="text-3xl font-bold">App</p>
-
-      {user && (
-        <div>
-          <Select onChange={(e) => setTimePeriod(e.target.value)}>
-            {["day", "week", "month", "year"].map((e) => (
-              <option key={e} value={e}>
-                {e}
-              </option>
-            ))}
-          </Select>
-          Hello {user?.nickname}
-          <p>In the past {timePeriod}, you spend $100</p>
         </div>
-      )}
-      <Button>
-        <Link href="/api/auth/login">Login</Link>
-      </Button>
+      </div>
+
+      {/* {array.map((e) => (
+        //code here
+      ))} */}
+
+      <div name="graph">
+        <p className="text-9xl text-white text-bold">GRAPH</p>
+      </div>
+
+      <div name="transactions" className="box-content h-24 w-3/4 p-4 border-2 border-gray-800 rounded-full py-3 px-6 bg-gray-700">
+
+      </div>
+
     </div>
   );
 }
