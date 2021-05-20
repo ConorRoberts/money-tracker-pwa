@@ -26,8 +26,6 @@ export default function Home() {
 
   const { data } = useQuery(GET_USER_DATA, { variables: { id: user?.sub } });
 
-  console.log(data);
-
   if (isLoading) return <Loading />;
 
   return (

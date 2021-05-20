@@ -28,7 +28,6 @@ const resolvers = {
         get_user_transactions: async (_, { id }) => {
             if (!id) return [];
             try {
-                console.log(id);
                 const transactions = await Transaction.find({ creator: id });
                 return transactions.map(e => formatTransaction(e))
             } catch (error) {
@@ -39,7 +38,6 @@ const resolvers = {
     },
     Mutation: {
         create_transaction: async (_, { transaction }) => {
-            console.log(transaction);
             try {
                 const newTransaction = new Transaction({ ...transaction });
                 await newTransaction.save();
