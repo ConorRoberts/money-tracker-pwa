@@ -40,9 +40,7 @@ const Form = () => {
             creator: user.sub,
           },
         },
-      });
-
-      router.push("/");
+      }).then(() => router.push("/"));
     } catch (error) {
       console.error(error);
     }
@@ -55,7 +53,7 @@ const Form = () => {
 
   if (isLoading) return <Loading />;
 
-  // if (!isLoading && !user) router.push("/");
+  if (!isLoading && !user) router.push("/");
 
   return (
     <div className="bg-gray-900 min-h-screen flex justify-center items-center">
