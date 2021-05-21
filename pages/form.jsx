@@ -40,9 +40,7 @@ const Form = () => {
             creator: user.sub,
           },
         },
-      });
-
-      router.push("/");
+      }).then(() => router.push("/"));
     } catch (error) {
       console.error(error);
     }
@@ -55,7 +53,7 @@ const Form = () => {
 
   if (isLoading) return <Loading />;
 
-  // if (!isLoading && !user) router.push("/");
+  if (!isLoading && !user) router.push("/");
 
   return (
     <div>
@@ -63,7 +61,12 @@ const Form = () => {
         className="lg:w-1/3 lg:mx-auto bg-gray-200 flex flex-col gap-4 p-5 m-2"
         onSubmit={handleSubmit}
       >
-        <Select name="type" onChange={handleChange} className="bg-white">
+        <Select
+          name="type"
+          onChange={handleChange}
+          value={form.type}
+          className="bg-white"
+        >
           <option value="revenue">Revenue</option>
           <option value="expense">Expense</option>
         </Select>
