@@ -31,8 +31,8 @@ const TransactionCard = ({ amount, note, created_at, category,type }) => {
             type === "revenue" ? "green" : "red"
           }-500 font-base text-2xl`}
         >{`$${amount.toFixed(2)}`}</h3>
-        <h4>{note}</h4>
-        <p>{new Date(created_at).toLocaleDateString()}</p>
+        <h4 className="text-white">{note}</h4>
+        <p className="text-white">{new Date(created_at).toLocaleDateString()}</p>
       </div>
     </div>
   );
