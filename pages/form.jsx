@@ -28,8 +28,6 @@ const Form = () => {
     taxable: false,
   });
 
-  console.log(form.taxable);
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -93,7 +91,7 @@ const Form = () => {
         <div className="flex flex-col items-center">
           <h2>Is this taxable?</h2>
           <Checkbox
-            className="w-10 h-10 bg-white"
+            className="w-7 h-7 bg-white"
             name="taxable"
             value={form.taxable}
             onClick={() => setForm({ ...form, taxable: !form.taxable })}

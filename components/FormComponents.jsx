@@ -26,7 +26,9 @@ export const Checkbox = (props) => {
       className={`relative rounded-md cursor-pointer flex justify-center items-center ${props.className}`}
     >
       {/* Checkmark */}
-      {props.value ? <Image width={35} height={35} src="/Check.svg" /> : null}
+      {props.value ? (
+        <Image layout="fill" src="/Check.svg" className="animate-fade-in" />
+      ) : null}
     </div>
   );
 };
