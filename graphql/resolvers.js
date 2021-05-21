@@ -1,3 +1,4 @@
+import TransactionCard from "@components/TransactionCard";
 import Transaction from "@models/transaction";
 
 /**
@@ -48,10 +49,23 @@ const resolvers = {
 
             return null;
         },
-        update_transaction: () => {
+        update_transaction: async (_, { id, transaction }) => {
+            try {
+                const updatedTransaction = await TransactionCard.findOneAndUpdate({ _id: id }, { ...transaction });
+                await updatedTransaction.save();
+            } catch (error) {
+                console.error(error);
+            }
+
             return null;
         },
         delete_transaction: () => {
+            try {
+                await TransactionCard.findOneAndDelete({ _id: id });
+            } catch (error) {
+                console.error(error);
+            }
+
             return null;
         },
     },

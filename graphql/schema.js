@@ -10,6 +10,7 @@ const schema = gql`
         creator: String!
         created_at:String!
         taxable:Boolean!
+        type:String!
     }
 
     input TransactionInput {
@@ -23,7 +24,6 @@ const schema = gql`
     }
 
     type Query {
-        hello:String
         get_transaction(id:String!): Transaction
         get_user_transactions(id:String!): [Transaction!]
     }
