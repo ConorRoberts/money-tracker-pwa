@@ -61,7 +61,7 @@ const Form = () => {
         className="lg:w-1/3 lg:mx-auto bg-gray-800 flex flex-col gap-4 p-5"
         onSubmit={handleSubmit}
       >
-        <Select name="type" onChange={handleChange} className="bg-white">
+        <Select value={form.type} name="type" onChange={handleChange} className="bg-white">
           <option value="" disabled>Choose a type</option>
           <option value="revenue">Revenue</option>
           <option value="expense">Expense</option>
@@ -80,7 +80,7 @@ const Form = () => {
           onChange={handleChange}
           value={form.note}
         />
-        <Select name="category" onChange={handleChange} className="bg-white">
+        <Select name="category" value={form.type} onChange={handleChange} className="bg-white">
           <option value="" disabled>Choose a category</option>
           <option value="groceries">Groceries</option>
           <option value="clothing">Clothing</option>
