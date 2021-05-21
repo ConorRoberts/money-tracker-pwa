@@ -59,7 +59,7 @@ const resolvers = {
 
             return null;
         },
-        delete_transaction: () => {
+        delete_transaction: async (_, { id }) => {
             try {
                 await TransactionCard.findOneAndDelete({ _id: id });
             } catch (error) {
