@@ -60,11 +60,11 @@ export default function Home() {
       <div className="flex flex-row gap-x-5">
         <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
           <p className="text-gray-500">Inc:</p>
-          <p className="text-green-500">${revenue_total.toLocaleString()}</p>
+          <p className="text-green-500">${revenue_total?.toLocaleString()}</p>
         </div>
         <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
           <p className="text-gray-500">Exp:</p>
-          <p className="text-red-500">${expense_total.toLocaleString()}</p>
+          <p className="text-red-500">${expense_total?.toLocaleString()}</p>
         </div>
       </div>
 
