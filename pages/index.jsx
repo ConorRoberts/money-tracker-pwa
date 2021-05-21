@@ -33,7 +33,7 @@ export default function Home() {
 
   return (
     <div className="bg-gray-900 flex items-center h-screen flex-col">
-      <p className="text-4xl text-white font-sans">$ 12,567</p>
+      <p className="text-4xl text-white font-thin">$ 12,567</p>
       <div className="flex flex-row gap-x-5">
         <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
           <p className="text-gray-500">Inc:</p>
