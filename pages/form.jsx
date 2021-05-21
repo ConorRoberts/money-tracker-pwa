@@ -58,12 +58,13 @@ const Form = () => {
   // if (!isLoading && !user) router.push("/");
 
   return (
-    <div>
+    <div className="bg-gray-900 min-h-screen flex justify-center items-center">
       <form
-        className="lg:w-1/3 lg:mx-auto bg-gray-200 flex flex-col gap-4 p-5 m-2"
+        className="lg:w-1/3 lg:mx-auto bg-gray-800 flex flex-col gap-4 p-5"
         onSubmit={handleSubmit}
       >
         <Select name="type" onChange={handleChange} className="bg-white">
+          <option value="" disabled>Choose a type</option>
           <option value="revenue">Revenue</option>
           <option value="expense">Expense</option>
         </Select>
@@ -81,14 +82,21 @@ const Form = () => {
           onChange={handleChange}
           value={form.note}
         />
-        <Input
-          placeholder="Category"
-          type="text"
-          name="category"
-          onChange={handleChange}
-          value={form.category}
-        />
-        <div className="flex flex-col items-center">
+        <Select name="category" onChange={handleChange} className="bg-white">
+          <option value="" disabled>Choose a category</option>
+          <option value="groceries">Groceries</option>
+          <option value="clothing">Clothing</option>
+          <option value="office_expense">Office Expense</option>
+          <option value="maintenance_and_repairs">Maintenance and Repairs</option>
+          <option value="revenue">Revenue</option>
+          <option value="travel">Travel</option>
+          <option value="technology">Technology</option>
+          <option value="rent">Rent</option>
+          <option value="meals">Meals</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="other">Other</option>
+        </Select>
+        <div className="flex flex-col items-center text-white">
           <h2>Is this taxable?</h2>
           <Checkbox
             className="w-7 h-7 bg-white"
@@ -97,8 +105,8 @@ const Form = () => {
             onClick={() => setForm({ ...form, taxable: !form.taxable })}
           />
         </div>
-        <div className="flex justify-center">
-          <Button type="submit">Submit</Button>
+        <div className="flex justify-center text-white">
+          <Button type="Submit" className="bg-gray-600">Submit</Button>
         </div>
       </form>
     </div>
