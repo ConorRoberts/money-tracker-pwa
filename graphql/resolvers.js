@@ -1,5 +1,5 @@
 import TransactionCard from "@components/TransactionCard";
-import Transaction from "@models/transaction";
+import Transaction from "@models/Transaction";
 
 /**
  * Formats mongoose transaction document into something GQL can use

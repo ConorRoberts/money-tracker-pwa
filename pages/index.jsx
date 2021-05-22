@@ -72,7 +72,7 @@ export default function Home() {
         <BarChart width={500} height={300} data={data?.get_user_transactions}>
           <Bar barSize={15} dataKey="amount" fill="#ffffff" />
           <YAxis dataKey="amount" />
-          <XAxis dataKey="note" />
+          <XAxis dataKey="category" />
           <Legend />
         </BarChart>
         {/* <ResponsiveContainer width="100%" height="100%">
