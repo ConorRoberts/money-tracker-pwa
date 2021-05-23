@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useSession, signIn, signOut } from "next-auth/client";
+import { Button } from "./FormComponents";
 
 export default function Navigation() {
   const [session, loading] = useSession();
@@ -54,6 +55,9 @@ export default function Navigation() {
             </Link>
           </li>
         ))}
+        <li>
+          <Button onClick={() => signIn()}>Signin</Button>
+        </li>
       </ul>
     </div>
   );
