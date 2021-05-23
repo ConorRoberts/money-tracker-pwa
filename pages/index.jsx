@@ -1,9 +1,9 @@
-import { useUser } from "@auth0/nextjs-auth0";
 import { Button } from "@components/FormComponents";
 import { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
+import {useSession} from "next-auth/client";
 import {
   BarChart,
   Bar,
@@ -23,7 +23,6 @@ const GET_USER_DATA = gql`
       note
       category
       amount
-      creator
       created_at
       taxable
       type
@@ -32,15 +31,14 @@ const GET_USER_DATA = gql`
 `;
 
 export default function Home() {
-  const { user, isLoading } = useUser();
+
+  const [session,loading] = useSession();
 
   const [timePeriod, setTimePeriod] = useState("week");
 
-  const { data } = useQuery(GET_USER_DATA, { variables: { id: user?.sub } });
+  const { data } = useQuery(GET_USER_DATA, { variables: { id: session?.user.id ?? "" } });
 
-  if (isLoading) return <Loading />;
-
-  console.log(data);
+  if (loading) return <Loading />;
 
   const revenue_total = data?.get_user_transactions
     .filter(({ category }) => category.toLowerCase() == "revenue")
@@ -75,8 +73,6 @@ export default function Home() {
           <XAxis dataKey="category" />
           <Legend />
         </BarChart>
-        {/* <ResponsiveContainer width="100%" height="100%">
-        </ResponsiveContainer> */}
       </div>
 
       <div

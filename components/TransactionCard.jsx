@@ -1,10 +1,10 @@
 import React from "react";
 import Image from "next/image";
 
-const icons_map = {
+export const categories = {
   groceries: "/Card_Grocery.svg",
   clothing: "/Card_Clothes.svg",
-  office_expense: "/Card_Office.svg",
+  "office expense": "/Card_Office.svg",
   other: "/Card_Other.svg",
   "maintenance & repairs": "/Card_Repairs.svg",
   revenue: "/Card_Revenue.svg",
@@ -22,7 +22,7 @@ const TransactionCard = ({ amount, note, created_at, category,type }) => {
         <Image
           width={25}
           height={25}
-          src={icons_map[category] ?? icons_map["other"]}
+          src={categories[category] ?? icons_map["other"]}
         />
       </div>
       <div className="flex flex-col justify-evenly flex-1">

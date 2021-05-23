@@ -18,10 +18,6 @@ const transactionSchema = new Schema({
         type: Number,
         default: 0
     },
-    creator: {
-        type: String,
-        default: "Unknown"
-    },
     created_at: {
         type: Date,
         default: Date.now()
