@@ -11,6 +11,15 @@ export default NextAuth({
     }),
   ],
 
+  callbacks: {
+    session: async (session, user) => {
+      return { session, user }
+    },
+    async redirect(url, baseUrl) {
+      return baseUrl;
+    },
+  },
+
   events: {
     async signIn({ user }) {
       await dbConnect();
@@ -24,6 +33,10 @@ export default NextAuth({
         await newClient.save();
       }
     },
+  },
+
+  pages: {
+    signIn: "/login",
   },
 
   database: process.env.DATABASE_URL,

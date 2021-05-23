@@ -22,7 +22,7 @@ const TransactionCard = ({ amount, note, created_at, category,type }) => {
         <Image
           width={25}
           height={25}
-          src={categories[category] ?? icons_map["other"]}
+          src={categories[category] ?? categories["other"]}
         />
       </div>
       <div className="flex flex-col justify-evenly flex-1">

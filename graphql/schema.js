@@ -35,8 +35,6 @@ const schema = gql`
     }
 
     type Query {
-        get_transaction(id:String!): Transaction
-        get_user_transactions(id:String!): [Transaction!]
         get_client(id:String!):Client
     }
 

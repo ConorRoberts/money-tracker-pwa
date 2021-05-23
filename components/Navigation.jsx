@@ -18,6 +18,18 @@ export default function Navigation() {
       text: "Form",
       icon: "/Plus.svg",
     },
+    {
+      path: "/api/auth/signout",
+      text: "Logout",
+      icon: "/Plus.svg",
+    },
+  ];
+  const LOGGED_OUT_LINKS = [
+    {
+      path: "/login",
+      text: "Login",
+      icon: "/Plus.svg",
+    },
   ];
 
   const link_style =
@@ -26,7 +38,10 @@ export default function Navigation() {
   return (
     <div className="bg-gray-800 text-white font-thin text-lg flex justify-center sm:justify-end px-10 items-start sm:items-center fixed bottom-0 w-full pb-6 sm:pb-0 sm:static">
       <ul className="flex list-none gap-10 sm:gap-0">
-        {[...ROUTES, ...LOGGED_IN_LINKS].map(({ path, text, icon }, index) => (
+        {[
+          ...ROUTES,
+          ...(() => (session ? LOGGED_IN_LINKS : LOGGED_OUT_LINKS))(),
+        ].map(({ path, text, icon }, index) => (
           <li key={`nav-bar-route-${index}`} className="block">
             <Link href={path}>
               <a className={link_style}>{text}</a>
@@ -38,9 +53,6 @@ export default function Navigation() {
             </Link> */}
           </li>
         ))}
-        <li className="block" onClick={() => (session ? signOut() : signIn())}>
-          <a className={link_style}>{session ? "Logout" : "Login"}</a>
-        </li>
       </ul>
     </div>
   );

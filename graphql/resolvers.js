@@ -23,6 +23,7 @@ const getClient = async (id) => {
         return {
             ...client._doc,
             id: client.id,
+            transactions: client._doc.transactions.map(e => formatTransaction(e)),
             auth: {
                 ...client._doc.auth._doc,
                 created_at: new Date(client._doc.auth.createdAt).toISOString(),
@@ -30,32 +31,12 @@ const getClient = async (id) => {
             }
         }
     } catch (e) {
-        console.log(e);
         return null;
     }
 }
 
 const resolvers = {
     Query: {
-        get_transaction: async (_, { id }) => {
-            try {
-                const transaction = await Transaction.findOne({ _id: id })
-                return transaction;
-            } catch (error) {
-                console.error(error);
-            }
-            return null;
-        },
-        get_user_transactions: async (_, { id }) => {
-            if (!id) return [];
-            try {
-                const transactions = await Transaction.find({ creator: id });
-                return transactions.map(e => formatTransaction(e))
-            } catch (error) {
-                console.error(error);
-            }
-            return [];
-        },
         get_client: async (_, { id }) => {
             return await getClient(id);
         }
@@ -63,17 +44,15 @@ const resolvers = {
     Mutation: {
         create_transaction: async (_, { client_id, transaction }) => {
             try {
-
-                const client = await getClient(client_id);
+                const client = await Client.findOne({ auth: client_id });
 
                 const newTransaction = new Transaction({ ...transaction });
                 await newTransaction.save();
 
-
                 client.transactions.push(newTransaction.id)
                 await client.save();
 
-                return null;
+                return formatTransaction(newTransaction);
             } catch (error) {
                 console.error(error);
             }
