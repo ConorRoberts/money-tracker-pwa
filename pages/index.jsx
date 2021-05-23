@@ -34,6 +34,19 @@ const GET_USER_DATA = gql`
   }
 `;
 
+const CustomTooltip = ({ p }) => {
+  return (
+    <div className="bg-white bg-opacity-90 p-3 shadow-md rounded-sm border-indigo-200 border">
+      <p>
+        <span className="mr-2 font-semibold">Category:</span> {p?.category}
+      </p>
+      <p>
+        <span className="mr-2 font-semibold">Value:</span> ${p?.value}
+      </p>
+    </div>
+  );
+};
+
 export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
@@ -47,7 +60,6 @@ export default function Home() {
   if (!loading && !session) router.push("/login");
   if (loading || !data || !session) return <Loading />;
 
-
   const revenue_total = data?.get_client?.transactions
     .filter(({ category }) => category.toLowerCase() == "revenue")
     .map((e) => e.amount)
@@ -60,7 +72,7 @@ export default function Home() {
 
   return (
     <div className="bg-gray-900 flex items-center min-h-screen flex-col">
-      <Header title="Home"/>
+      <Header title="Home" />
       <p className="text-4xl text-white font-sans">
         ${(revenue_total - expense_total).toLocaleString()}
       </p>
@@ -76,11 +88,19 @@ export default function Home() {
       </div>
 
       <div className="h-96">
-        <BarChart width={500} height={300} data={data?.get_client?.transactions}>
+        <BarChart
+          width={500}
+          height={300}
+          data={data?.get_client?.transactions}
+        >
           <Bar barSize={15} dataKey="amount" fill="#ffffff" />
           <YAxis dataKey="amount" />
           <XAxis dataKey="category" />
-          <Legend />
+          {/* <Legend /> */}
+          <Tooltip
+            cursor={{ fill: "transparent" }}
+            content={({ payload: [p] }) => <CustomTooltip p={p} />}
+          />
         </BarChart>
       </div>
 
