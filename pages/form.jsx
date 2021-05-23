@@ -7,6 +7,7 @@ import { useUser } from "@auth0/nextjs-auth0";
 import { useRouter } from "next/router";
 import Loading from "@components/Loading";
 import { Checkbox } from "@components/FormComponents";
+import { categories } from "@components/TransactionCard";
 
 const CREATE_TRANSACTION = gql`
   mutation createTransaction($transaction: TransactionInput!) {
@@ -61,8 +62,15 @@ const Form = () => {
         className="lg:w-1/3 lg:mx-auto bg-gray-800 flex flex-col gap-4 p-5"
         onSubmit={handleSubmit}
       >
-        <Select value={form.type} name="type" onChange={handleChange} className="bg-white">
-          <option value="" disabled>Choose a type</option>
+        <Select
+          value={form.type}
+          name="type"
+          onChange={handleChange}
+          className="bg-white"
+        >
+          <option value="" disabled>
+            Choose a type
+          </option>
           <option value="revenue">Revenue</option>
           <option value="expense">Expense</option>
         </Select>
@@ -80,19 +88,21 @@ const Form = () => {
           onChange={handleChange}
           value={form.note}
         />
-        <Select name="category" value={form.type} onChange={handleChange} className="bg-white">
-          <option value="" disabled>Choose a category</option>
-          <option value="groceries">Groceries</option>
-          <option value="clothing">Clothing</option>
-          <option value="office_expense">Office Expense</option>
-          <option value="maintenance_and_repairs">Maintenance and Repairs</option>
-          <option value="revenue">Revenue</option>
-          <option value="travel">Travel</option>
-          <option value="technology">Technology</option>
-          <option value="rent">Rent</option>
-          <option value="meals">Meals</option>
-          <option value="entertainment">Entertainment</option>
-          <option value="other">Other</option>
+        <Select
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+          className="bg-white capitalize"
+        >
+          <option value="" disabled>
+            Choose a category
+          </option>
+
+          {Object.keys(categories).map((e, index) => (
+            <option className="capitalize" key={`${e}-${index}`} value={e}>
+              {e}
+            </option>
+          ))}
         </Select>
         <div className="flex flex-col items-center text-white">
           <h2>Is this taxable?</h2>
@@ -104,7 +114,9 @@ const Form = () => {
           />
         </div>
         <div className="flex justify-center text-white">
-          <Button type="Submit" className="bg-gray-600">Submit</Button>
+          <Button type="Submit" className="bg-gray-600">
+            Submit
+          </Button>
         </div>
       </form>
     </div>

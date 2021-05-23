@@ -1,5 +1,6 @@
-import TransactionCard from "@components/TransactionCard";
 import Transaction from "@models/Transaction";
+import Client from "@models/Client";
+import User from "@models/User";
 
 /**
  * Formats mongoose transaction document into something GQL can use
@@ -13,6 +14,25 @@ const formatTransaction = (transactionDocument) => {
         id: transactionDocument.id,
         created_at: new Date(transaction.created_at).toISOString()
     };
+}
+
+const getClient = async (id) => {
+    try {
+        const client = await Client.findOne({ auth: id }).populate("auth").populate("transactions");
+
+        return {
+            ...client._doc,
+            id: client.id,
+            auth: {
+                ...client._doc.auth._doc,
+                created_at: new Date(client._doc.auth.createdAt).toISOString(),
+                updated_at: new Date(client._doc.auth.updatedAt).toISOString()
+            }
+        }
+    } catch (e) {
+        console.log(e);
+        return null;
+    }
 }
 
 const resolvers = {
@@ -35,14 +55,25 @@ const resolvers = {
                 console.error(error);
             }
             return [];
+        },
+        get_client: async (_, { id }) => {
+            return await getClient(id);
         }
     },
     Mutation: {
-        create_transaction: async (_, { transaction }) => {
+        create_transaction: async (_, { client_id, transaction }) => {
             try {
+
+                const client = await getClient(client_id);
+
                 const newTransaction = new Transaction({ ...transaction });
                 await newTransaction.save();
-                return formatTransaction(newTransaction);
+
+
+                client.transactions.push(newTransaction.id)
+                await client.save();
+
+                return null;
             } catch (error) {
                 console.error(error);
             }
@@ -51,7 +82,7 @@ const resolvers = {
         },
         update_transaction: async (_, { id, transaction }) => {
             try {
-                const updatedTransaction = await TransactionCard.findOneAndUpdate({ _id: id }, { ...transaction });
+                const updatedTransaction = await Transaction.findOneAndUpdate({ _id: id }, { ...transaction });
                 await updatedTransaction.save();
             } catch (error) {
                 console.error(error);
@@ -61,7 +92,7 @@ const resolvers = {
         },
         delete_transaction: async (_, { id }) => {
             try {
-                await TransactionCard.findOneAndDelete({ _id: id });
+                await Transaction.findOneAndDelete({ _id: id });
             } catch (error) {
                 console.error(error);
             }
