@@ -21,14 +21,14 @@ export default function Navigation() {
     {
       path: "/api/auth/signout",
       text: "Logout",
-      icon: "/Plus.svg",
+      icon: "/Person.svg",
     },
   ];
   const LOGGED_OUT_LINKS = [
     {
       path: "/login",
       text: "Login",
-      icon: "/Plus.svg",
+      icon: "/Person.svg",
     },
   ];
 
@@ -46,11 +46,12 @@ export default function Navigation() {
             <Link href={path}>
               <a className={link_style}>{text}</a>
             </Link>
-            {/* <Link href={path}>
-              <a className="cursor-pointer p-3 rounded-md hover:bg-gray-900 transition-all sm:hidden flex justify-center">
-                <Image priority width={30} height={30} src={icon} />
+            <Link href={path}>
+              <a className="cursor-pointer p-3 rounded-md hover:bg-gray-900 transition-all sm:hidden flex justify-center items-center">
+                <Image priority width={15} height={15} src={icon} />
+                <p>{text}</p>
               </a>
-            </Link> */}
+            </Link>
           </li>
         ))}
       </ul>
