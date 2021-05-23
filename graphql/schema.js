@@ -7,7 +7,6 @@ const schema = gql`
         note: String!
         category:String!
         amount:Float!
-        creator: String!
         created_at:String!
         taxable:Boolean!
         type:String!
@@ -20,15 +19,27 @@ const schema = gql`
         amount:Float!
         taxable:Boolean!
         created_at:String
-        creator:String!
+    }
+    type Auth {
+        id: ID!
+        name: String!
+        image: String!
+        created_at: String!
+        updated_at: String!
+    }
+
+    type Client{
+        id:ID!
+        transactions:[Transaction!]
+        auth:Auth!
     }
 
     type Query {
-        get_transaction(id:String!): Transaction
-        get_user_transactions(id:String!): [Transaction!]
+        get_client(id:String!):Client
     }
+
     type Mutation {
-        create_transaction(transaction:TransactionInput!): Transaction
+        create_transaction(client_id:String!,transaction:TransactionInput!):Transaction
         update_transaction(id:String!,transaction:TransactionInput!): Transaction
         delete_transaction(id:String!): Transaction
     }

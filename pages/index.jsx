@@ -1,9 +1,9 @@
-import { useUser } from "@auth0/nextjs-auth0";
 import { Button } from "@components/FormComponents";
 import { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
+import { useSession } from "next-auth/client";
 import {
   BarChart,
   Bar,
@@ -15,45 +15,52 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useRouter } from "next/router";
+import Header from "@components/Header";
 
 const GET_USER_DATA = gql`
   query getUserData($id: String!) {
-    get_user_transactions(id: $id) {
-      id
-      note
-      category
-      amount
-      creator
-      created_at
-      taxable
-      type
+    get_client(id: $id) {
+      transactions {
+        id
+        note
+        category
+        amount
+        created_at
+        taxable
+        type
+      }
     }
   }
 `;
 
 export default function Home() {
-  const { user, isLoading } = useUser();
+  const [session, loading] = useSession();
+  const router = useRouter();
 
   const [timePeriod, setTimePeriod] = useState("week");
 
-  const { data } = useQuery(GET_USER_DATA, { variables: { id: user?.sub } });
+  const { data } = useQuery(GET_USER_DATA, {
+    variables: { id: session?.user.id ?? " " },
+  });
 
-  if (isLoading) return <Loading />;
+  if (!loading && !session) router.push("/login");
+  if (loading || !data || !session) return <Loading />;
 
-  console.log(data);
 
-  const revenue_total = data?.get_user_transactions
+  const revenue_total = data?.get_client?.transactions
     .filter(({ category }) => category.toLowerCase() == "revenue")
     .map((e) => e.amount)
     .reduce((a, b) => a + b, 0);
 
-  const expense_total = data?.get_user_transactions
+  const expense_total = data?.get_client?.transactions
     .filter(({ category }) => category.toLowerCase() !== "revenue")
     .map((e) => e.amount)
     .reduce((a, b) => a + b, 0);
 
   return (
     <div className="bg-gray-900 flex items-center min-h-screen flex-col">
+      <Header title="Home"/>
       <p className="text-4xl text-white font-sans">
         ${(revenue_total - expense_total).toLocaleString()}
       </p>
@@ -69,21 +76,19 @@ export default function Home() {
       </div>
 
       <div className="h-96">
-        <BarChart width={500} height={300} data={data?.get_user_transactions}>
+        <BarChart width={500} height={300} data={data?.get_client?.transactions}>
           <Bar barSize={15} dataKey="amount" fill="#ffffff" />
           <YAxis dataKey="amount" />
           <XAxis dataKey="category" />
           <Legend />
         </BarChart>
-        {/* <ResponsiveContainer width="100%" height="100%">
-        </ResponsiveContainer> */}
       </div>
 
       <div
         name="transactions"
         className="flex flex-wrap gap-10 justify-center mt-5"
       >
-        {data?.get_user_transactions?.map((e, index) => (
+        {data?.get_client?.transactions?.map((e, index) => (
           <TransactionCard
             {...e}
             key={`transaction-card-${index}`}
