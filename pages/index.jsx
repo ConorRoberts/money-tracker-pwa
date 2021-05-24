@@ -4,17 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
 import { useSession } from "next-auth/client";
-import {
-  BarChart,
-  Bar,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { useRouter } from "next/router";
 import Header from "@components/Header";
 
@@ -34,14 +24,14 @@ const GET_USER_DATA = gql`
   }
 `;
 
-const CustomTooltip = ({ p }) => {
+const CustomTooltip = ({ p: { payload } = {} }) => {
   return (
     <div className="bg-white bg-opacity-90 p-3 shadow-md rounded-sm border-indigo-200 border">
       <p>
-        <span className="mr-2 font-semibold">Category:</span> {p?.category}
+        <span className="mr-2 font-semibold">Category:</span> {payload?.key}
       </p>
       <p>
-        <span className="mr-2 font-semibold">Value:</span> ${p?.value}
+        <span className="mr-2 font-semibold">Value:</span> ${payload?.value}
       </p>
     </div>
   );
@@ -50,9 +40,9 @@ const CustomTooltip = ({ p }) => {
 const Chart = (props) => {
   return (
     <BarChart {...props}>
-      <Bar barSize={15} dataKey="amount" fill="#ffffff" />
-      <YAxis dataKey="amount" />
-      <XAxis dataKey="category" />
+      <Bar barSize={15} dataKey="value" fill="#ffffff" />
+      <YAxis dataKey="value" />
+      <XAxis dataKey="key" />
       <Tooltip
         cursor={{ fill: "transparent" }}
         content={({ payload: [p] }) => <CustomTooltip p={p} />}
@@ -75,20 +65,24 @@ export default function Home() {
   if (loading || !data || !session) return <Loading />;
 
   const revenue_total = data?.get_client?.transactions
-    .filter(({ category }) => category.toLowerCase() == "revenue")
+    .filter((e) => e?.category?.toLowerCase() == "revenue")
     .map((e) => e.amount)
     .reduce((a, b) => a + b, 0);
 
   const expense_total = data?.get_client?.transactions
-    .filter(({ category }) => category.toLowerCase() !== "revenue")
+    .filter((e) => e?.category?.toLowerCase() !== "revenue")
     .map((e) => e.amount)
     .reduce((a, b) => a + b, 0);
 
-    const grouped_transactions = _.groupBy(data?.get_client?.transactions,"category");
-    console.log(grouped_transactions);
+  const grouped_transactions = Object.entries(
+    _.groupBy(data?.get_client?.transactions, "category")
+  ).map(([key, val]) => ({
+    key,
+    value: val.map((e) => e.amount).reduce((a, b) => a + b, 0),
+  }));
 
   return (
-    <div className="bg-gray-900 flex items-center min-h-screen flex-col">
+    <div className="bg-gray-900 flex items-center min-h-screen flex-col p-1">
       <Header title="Home" />
       <p className="text-4xl text-white font-sans">
         ${(revenue_total - expense_total).toLocaleString()}
@@ -105,15 +99,15 @@ export default function Home() {
       </div>
 
       <div className="block md:hidden">
-        <Chart width={300} height={400} data={data?.get_client?.transactions} />
+        <Chart width={400} height={400} data={grouped_transactions} />
       </div>
       <div className="hidden md:block">
-        <Chart width={600} height={400} data={data?.get_client?.transactions} />
+        <Chart width={600} height={400} data={grouped_transactions} />
       </div>
 
       <div
         name="transactions"
-        className="flex flex-wrap gap-10 justify-center mt-5"
+        className="flex flex-wrap flex-col sm:flex-row gap-4 sm:gap-10 justify-center mt-5 w-full"
       >
         {data?.get_client?.transactions?.map((e, index) => (
           <TransactionCard
