@@ -10,6 +10,7 @@
     "@apollo/client": "^3.3.18",
     "apollo-server-micro": "^2.24.0",
     "graphql": "^15.5.0",
+    "lodash": "^4.17.21",
     "mongoose": "^5.12.9",
     "next": "latest",
     "next-auth": "^3.23.3",

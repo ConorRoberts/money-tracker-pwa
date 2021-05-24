@@ -1,4 +1,4 @@
-import { Button } from "@components/FormComponents";
+import _ from "lodash";
 import { useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import Loading from "@components/Loading";
@@ -47,6 +47,20 @@ const CustomTooltip = ({ p }) => {
   );
 };
 
+const Chart = (props) => {
+  return (
+    <BarChart {...props}>
+      <Bar barSize={15} dataKey="amount" fill="#ffffff" />
+      <YAxis dataKey="amount" />
+      <XAxis dataKey="category" />
+      <Tooltip
+        cursor={{ fill: "transparent" }}
+        content={({ payload: [p] }) => <CustomTooltip p={p} />}
+      />
+    </BarChart>
+  );
+};
+
 export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
@@ -70,6 +84,9 @@ export default function Home() {
     .map((e) => e.amount)
     .reduce((a, b) => a + b, 0);
 
+    const grouped_transactions = _.groupBy(data?.get_client?.transactions,"category");
+    console.log(grouped_transactions);
+
   return (
     <div className="bg-gray-900 flex items-center min-h-screen flex-col">
       <Header title="Home" />
@@ -87,21 +104,11 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="h-96">
-        <BarChart
-          width={500}
-          height={300}
-          data={data?.get_client?.transactions}
-        >
-          <Bar barSize={15} dataKey="amount" fill="#ffffff" />
-          <YAxis dataKey="amount" />
-          <XAxis dataKey="category" />
-          {/* <Legend /> */}
-          <Tooltip
-            cursor={{ fill: "transparent" }}
-            content={({ payload: [p] }) => <CustomTooltip p={p} />}
-          />
-        </BarChart>
+      <div className="block md:hidden">
+        <Chart width={300} height={400} data={data?.get_client?.transactions} />
+      </div>
+      <div className="hidden md:block">
+        <Chart width={600} height={400} data={data?.get_client?.transactions} />
       </div>
 
       <div

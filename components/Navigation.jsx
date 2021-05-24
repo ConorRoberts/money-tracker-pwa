@@ -1,7 +1,6 @@
 import Link from "next/link";
-import Image from "next/image";
-import { useSession, signIn, signOut } from "next-auth/client";
-import { Button } from "./FormComponents";
+import { useSession } from "next-auth/client";
+// import Image from "next/image";
 
 export default function Navigation() {
   const [session, loading] = useSession();
@@ -37,7 +36,7 @@ export default function Navigation() {
     "cursor-pointer p-3 rounded-md hover:bg-gray-900 transition-all block";
 
   return (
-    <div className="bg-gray-800 text-white font-thin text-lg flex justify-center sm:justify-end px-10 items-start sm:items-center fixed bottom-0 w-full pb-6 sm:pb-0 sm:static">
+    <div className="bg-gray-800 text-white font-thin text-lg flex justify-center sm:justify-end px-10 items-start sm:items-center fixed bottom-0 w-full pb-6 sm:pb-0 sm:static z-50">
       <ul className="flex list-none gap-10 sm:gap-0">
         {[
           ...ROUTES,
@@ -46,12 +45,6 @@ export default function Navigation() {
           <li key={`nav-bar-route-${index}`} className="block">
             <Link href={path}>
               <a className={link_style}>{text}</a>
-            </Link>
-            <Link href={path}>
-              <a className="cursor-pointer p-3 rounded-md hover:bg-gray-900 transition-all sm:hidden flex justify-center items-center">
-                <Image priority width={15} height={15} src={icon} />
-                <p>{text}</p>
-              </a>
             </Link>
           </li>
         ))}
