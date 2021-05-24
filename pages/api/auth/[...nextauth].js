@@ -34,9 +34,9 @@ export default NextAuth({
     },
   },
 
-  // pages: {
-  //   signIn: "/login",
-  // },
+  pages: {
+    signIn: "/login",
+  },
 
   database: process.env.DATABASE_URL,
 })
