@@ -55,9 +55,6 @@ export default function Navigation() {
             </Link>
           </li>
         ))}
-        <li>
-          <Button onClick={() => signIn()}>Signin</Button>
-        </li>
       </ul>
     </div>
   );
