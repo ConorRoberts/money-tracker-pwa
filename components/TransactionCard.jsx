@@ -17,7 +17,7 @@ export const categories = {
 
 const TransactionCard = ({ amount, note, created_at, category,type }) => {
   return (
-    <div className="bg-gray-700 rounded-lg p-5 flex items-center gap-5 shadow-md">
+    <div className="bg-gray-700 rounded-lg p-5 flex items-center gap-5 shadow-md flex-auto sm:flex-none sm:w-96">
       <div className="rounded-full bg-gray-400 p-6 flex justify-center items-center">
         <Image
           width={25}
