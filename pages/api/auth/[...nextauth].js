@@ -18,11 +18,9 @@ export default NextAuth({
   },
 
   events: {
-    async signIn({ user }) {
+    async signIn({ user,isNewUser }) {
       await dbConnect();
-      const foundClient = await Client.findOne({ auth: user.id });
-      if (!foundClient) {
-
+      if (isNewUser) {
         // Create new client document for this user
         const newClient = new Client({
           auth: user.id,
