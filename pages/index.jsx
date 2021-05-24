@@ -7,6 +7,7 @@ import { useSession } from "next-auth/client";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { useRouter } from "next/router";
 import Header from "@components/Header";
+import { Select } from "@components/FormComponents";
 
 const GET_USER_DATA = gql`
   query getUserData($id: String!) {
@@ -82,7 +83,7 @@ export default function Home() {
   }));
 
   return (
-    <div className="bg-gray-900 flex items-center min-h-screen flex-col p-1">
+    <div className="bg-gray-900 flex items-center min-h-screen flex-col p-1 pb-20 sm:pb-0">
       <Header title="Home" />
       <p className="text-4xl text-white font-sans">
         ${(revenue_total - expense_total).toLocaleString()}
@@ -104,6 +105,20 @@ export default function Home() {
       <div className="hidden md:block">
         <Chart width={600} height={400} data={grouped_transactions} />
       </div>
+
+      {/* <div className="flex justify-center items-center w-full">
+        <Select className="w-3/4 sm:w-1/4">
+          {["day", "week", "month", "year"].map((e, index) => (
+            <option
+              key={`${e}-${index}`}
+              value={e}
+              onChange={(e) => setTimePeriod(e.target.value)}
+            >
+              {e}
+            </option>
+          ))}
+        </Select>
+      </div> */}
 
       <div
         name="transactions"
