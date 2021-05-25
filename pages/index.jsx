@@ -1,6 +1,5 @@
 import _ from "lodash";
 import { useState } from "react";
-import { gql, useQuery } from "@apollo/client";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
 import { useSession } from "next-auth/client";
@@ -8,22 +7,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { useRouter } from "next/router";
 import Header from "@components/Header";
 import { Select } from "@components/FormComponents";
-
-const GET_USER_DATA = gql`
-  query getUserData($id: String!) {
-    get_client(id: $id) {
-      transactions {
-        id
-        note
-        category
-        amount
-        created_at
-        taxable
-        type
-      }
-    }
-  }
-`;
+import EditTransactionPopup from "@components/EditTransactionPopup";
+import useClient from "@utils/useClient";
 
 const CustomTooltip = ({ p: { payload } = {} }) => {
   return (
@@ -58,9 +43,7 @@ export default function Home() {
 
   const [timePeriod, setTimePeriod] = useState("week");
 
-  const { data } = useQuery(GET_USER_DATA, {
-    variables: { id: session?.user.id ?? " " },
-  });
+  const data = useClient();
 
   if (!loading && !session) router.push("/login");
   if (loading || !data || !session) return <Loading />;
@@ -106,6 +89,8 @@ export default function Home() {
         <Chart width={600} height={400} data={grouped_transactions} />
       </div>
 
+      <EditTransactionPopup/>
+
       {/* <div className="flex justify-center items-center w-full">
         <Select className="w-3/4 sm:w-1/4">
           {["day", "week", "month", "year"].map((e, index) => (
@@ -125,11 +110,15 @@ export default function Home() {
         className="flex flex-wrap flex-col sm:flex-row gap-4 sm:gap-10 justify-center mt-5 w-full"
       >
         {data?.get_client?.transactions?.map((e, index) => (
+          <div 
+            key={`transaction-card-${index}`}
+          >
+
           <TransactionCard
             {...e}
-            key={`transaction-card-${index}`}
             className="flex-1"
-          />
+            />
+            </div>
         ))}
       </div>
     </div>
