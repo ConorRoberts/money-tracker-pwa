@@ -19,7 +19,7 @@ export const categories = {
 
 const TransactionCard = ({ id, amount, note, created_at, category, type }) => {
   return (
-    <div className="bg-gray-700 rounded-lg p-5 flex items-center gap-5 shadow-md flex-auto sm:flex-none sm:w-96">
+    <div className="bg-gray-700 rounded-lg p-5 flex items-center gap-5 shadow-md flex-auto sm:flex-none sm:w-96 relative">
       <div className="rounded-full bg-gray-400 p-6 flex justify-center items-center">
         <Image
           width={25}
@@ -35,15 +35,17 @@ const TransactionCard = ({ id, amount, note, created_at, category, type }) => {
         >{`$${amount.toFixed(2)}`}</h3>
         <h4 className="text-white">{note}</h4>
         <p className="text-white">
-          {new Date(created_at).toLocaleDateString()}
+          {new Date(created_at).toDateString()}
         </p>
-        <Link passHref href={`/transaction-form/edit/${id}`}>
-          <a className="block">
-            <Button type="button" className="bg-white block">
-              Edit
-            </Button>
-          </a>
-        </Link>
+        <div className="absolute top-1 right-1">
+          <Link passHref href={`/transaction-form/edit/${id}`}>
+            <a>
+              <Button type="button" className="px-3 py-2 hover:bg-gray-400 transition-all">
+                <Image src="/Pencil.svg" width={15} height={15}/>
+              </Button>
+            </a>
+          </Link>
+        </div>
       </div>
     </div>
   );

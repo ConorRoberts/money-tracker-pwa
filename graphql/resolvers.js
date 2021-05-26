@@ -72,6 +72,8 @@ const resolvers = {
             try {
                 const updatedTransaction = await Transaction.findOneAndUpdate({ _id: id }, { ...transaction });
                 await updatedTransaction.save();
+
+                return formatTransaction(updatedTransaction);
             } catch (error) {
                 console.error(error);
             }
@@ -80,7 +82,9 @@ const resolvers = {
         },
         delete_transaction: async (_, { id }) => {
             try {
-                await Transaction.findOneAndDelete({ _id: id });
+                const deletedTransaction = await Transaction.findOneAndDelete({ _id: id });
+
+                return formatTransaction(deletedTransaction);
             } catch (error) {
                 console.error(error);
             }

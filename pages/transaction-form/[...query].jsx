@@ -49,6 +49,7 @@ export default function TransactionForm({ id = "", method }) {
     amount: "",
     category: "",
     type: "",
+    created_at: "",
     taxable: false,
   });
 
@@ -56,40 +57,60 @@ export default function TransactionForm({ id = "", method }) {
     if (method === "edit") getTransaction({ variables: { id: id } });
   }, []);
 
-  
   useEffect(() => {
     if (data) {
-      setForm({ ...data?.get_transaction });
+      setForm({
+        ...data?.get_transaction,
+        created_at: data?.get_transaction.created_at.slice(0, 10),
+      });
     }
   }, [data]);
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
+    const transaction = {
+      category: form.category,
+      note: form.note,
+      taxable: form.taxable,
+      amount: +form.amount,
+      type: form.category === "revenue" ? "revenue" : "expense",
+      created_at: form.created_at.length
+        ? new Date(...form.created_at.split("-"))
+        : new Date.now(),
+    };
+
     try {
-      createTransaction({
-        variables: {
-          client_id: session.user.id,
-          transaction: {
-            ...form,
-            amount: +form.amount,
-            type: form.category === "revenue" ? "revenue" : "expense",
+      if (method === "new") {
+        createTransaction({
+          variables: {
+            client_id: session.user.id,
+            transaction,
           },
-        },
-      });
+        });
+      } else if (method === "edit") {
+        updateTransaction({
+          variables: {
+            id,
+            transaction,
+          },
+        });
+      }
+
+      router.push("/");
     } catch (error) {
       console.error(error);
     }
   };
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
-  
+
   if (loading) return <Loading />;
   if (method === "edit" && !data) return <Loading />;
-  
+
   if (!loading && !session) router.push("/");
   return (
     <div className="bg-gray-900 min-h-screen flex justify-center items-center">
@@ -127,6 +148,12 @@ export default function TransactionForm({ id = "", method }) {
           name="note"
           onChange={handleChange}
           value={form.note}
+        />
+        <Input
+          type="date"
+          name="created_at"
+          onChange={handleChange}
+          value={form.created_at}
         />
         <div className="flex flex-col items-center text-white">
           <p>Taxable?</p>

@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
 import { useSession } from "next-auth/client";
@@ -39,10 +39,17 @@ const Chart = (props) => {
 export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
-
   const [timePeriod, setTimePeriod] = useState("week");
+  const [data, refetch] = useClient();
 
-  const [data,refetch] = useClient();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 5000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [refetch]);
 
   if (!loading && !session) router.push("/login");
   if (loading || !data || !session) return <Loading />;
@@ -107,17 +114,14 @@ export default function Home() {
         className="flex flex-wrap flex-col sm:flex-row gap-4 sm:gap-10 justify-center mt-5 w-full"
       >
         {/* Sort items in reverse-chronological order */}
-        {data?.get_client?.transactions?.slice().reverse().map((e, index) => (
-          <div 
-            key={`transaction-card-${index}`}
-          >
-
-          <TransactionCard
-            {...e}
-            className="flex-1"
-            />
+        {data?.get_client?.transactions
+          ?.slice()
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .map((e, index) => (
+            <div key={`transaction-card-${index}`}>
+              <TransactionCard {...e} className="flex-1" />
             </div>
-        ))}
+          ))}
       </div>
     </div>
   );
