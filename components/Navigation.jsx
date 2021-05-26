@@ -3,7 +3,7 @@ import { useSession } from "next-auth/client";
 // import Image from "next/image";
 
 export default function Navigation() {
-  const [session, loading] = useSession();
+  const [session, _] = useSession();
 
   const ROUTES = [
     {
@@ -14,7 +14,7 @@ export default function Navigation() {
   ];
   const LOGGED_IN_LINKS = [
     {
-      path: "/form",
+      path: "/transaction-form/new",
       text: "Form",
       icon: "/Plus.svg",
     },

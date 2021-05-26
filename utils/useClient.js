@@ -18,11 +18,11 @@ const GET_USER_DATA = gql`
 `;
 
 export default function useClient() {
-    const [session, _] = useSession();
+  const [session, _] = useSession();
 
-    const { data } = useQuery(GET_USER_DATA, {
-        variables: { id: session?.user.id ?? " " },
-    });
+  const { data, refetch } = useQuery(GET_USER_DATA, {
+    variables: { id: session?.user.id ?? " " },
+  });
 
-    return data;
+  return [data, refetch];
 };

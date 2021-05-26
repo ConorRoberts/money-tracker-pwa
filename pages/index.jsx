@@ -7,7 +7,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
 import { useRouter } from "next/router";
 import Header from "@components/Header";
 import { Select } from "@components/FormComponents";
-import EditTransactionPopup from "@components/EditTransactionPopup";
 import useClient from "@utils/useClient";
 
 const CustomTooltip = ({ p: { payload } = {} }) => {
@@ -43,7 +42,7 @@ export default function Home() {
 
   const [timePeriod, setTimePeriod] = useState("week");
 
-  const data = useClient();
+  const [data,refetch] = useClient();
 
   if (!loading && !session) router.push("/login");
   if (loading || !data || !session) return <Loading />;
@@ -89,8 +88,6 @@ export default function Home() {
         <Chart width={600} height={400} data={grouped_transactions} />
       </div>
 
-      <EditTransactionPopup/>
-
       {/* <div className="flex justify-center items-center w-full">
         <Select className="w-3/4 sm:w-1/4">
           {["day", "week", "month", "year"].map((e, index) => (
@@ -109,7 +106,8 @@ export default function Home() {
         name="transactions"
         className="flex flex-wrap flex-col sm:flex-row gap-4 sm:gap-10 justify-center mt-5 w-full"
       >
-        {data?.get_client?.transactions?.map((e, index) => (
+        {/* Sort items in reverse-chronological order */}
+        {data?.get_client?.transactions?.slice().reverse().map((e, index) => (
           <div 
             key={`transaction-card-${index}`}
           >
