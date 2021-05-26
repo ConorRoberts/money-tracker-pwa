@@ -35,7 +35,8 @@ const schema = gql`
     }
 
     type Query {
-        get_client(id:String!):Client
+        get_client(id:String!):Client!
+        get_transaction(id:String!):Transaction!
     }
 
     type Mutation {

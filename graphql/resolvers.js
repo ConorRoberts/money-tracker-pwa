@@ -39,6 +39,15 @@ const resolvers = {
     Query: {
         get_client: async (_, { id }) => {
             return await getClient(id);
+        },
+        get_transaction: async (_, { id }) => {
+            try {
+                const transaction = await Transaction.findOne({ _id: id });
+
+                return formatTransaction(transaction);
+            } catch (e) {
+                return null;
+            }
         }
     },
     Mutation: {

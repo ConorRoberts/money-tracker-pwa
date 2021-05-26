@@ -3,13 +3,47 @@ import { Input, Select, Button, Checkbox } from "@components/FormComponents";
 import { useRouter } from "next/router";
 import Loading from "@components/Loading";
 import { useSession } from "next-auth/client";
+import { gql, useMutation, useLazyQuery } from "@apollo/client";
+import { categories } from "@components/TransactionCard";
+
+const UPDATE_TRANSACTION = gql`
+  mutation updateTransaction($id: String!, $transaction: TransactionInput!) {
+    update_transaction(id: $id, transaction: $transaction) {
+      id
+    }
+  }
+`;
+
+const CREATE_TRANSACTION = gql`
+  mutation createTransaction(
+    $client_id: String!
+    $transaction: TransactionInput!
+  ) {
+    create_transaction(client_id: $client_id, transaction: $transaction) {
+      id
+    }
+  }
+`;
+const GET_TRANSACTION = gql`
+  query getTransaction($id: String!) {
+    get_transaction(id: $id) {
+      id
+      note
+      category
+      amount
+      created_at
+      taxable
+      type
+    }
+  }
+`;
 
 export default function TransactionForm({ id = "", method }) {
-  useEffect(() => {}, []);
-
   const [session, loading] = useSession();
   const router = useRouter();
-  const [createTransaction, { data }] = useMutation(CREATE_TRANSACTION);
+  const [getTransaction, { data }] = useLazyQuery(GET_TRANSACTION);
+  const [updateTransaction] = useMutation(UPDATE_TRANSACTION);
+  const [createTransaction] = useMutation(CREATE_TRANSACTION);
   const [form, setForm] = useState({
     note: "",
     amount: "",
@@ -19,12 +53,19 @@ export default function TransactionForm({ id = "", method }) {
   });
 
   useEffect(() => {
-    if (data) router.push("/");
-  }, [data]);
+    if (method === "edit") getTransaction({ variables: { id: id } });
+  }, []);
 
+  
+  useEffect(() => {
+    if (data) {
+      setForm({ ...data?.get_transaction });
+    }
+  }, [data]);
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-
+    
     try {
       createTransaction({
         variables: {
@@ -40,14 +81,15 @@ export default function TransactionForm({ id = "", method }) {
       console.error(error);
     }
   };
-
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
   };
-
+  
   if (loading) return <Loading />;
-
+  if (method === "edit" && !data) return <Loading />;
+  
   if (!loading && !session) router.push("/");
   return (
     <div className="bg-gray-900 min-h-screen flex justify-center items-center">

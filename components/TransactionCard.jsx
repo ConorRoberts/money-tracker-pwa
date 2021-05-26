@@ -1,5 +1,7 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@components/FormComponents";
 
 export const categories = {
   groceries: "/Card_Grocery.svg",
@@ -15,7 +17,7 @@ export const categories = {
   "meals & entertainment": "/Card_Entertainment.svg",
 };
 
-const TransactionCard = ({ amount, note, created_at, category,type }) => {
+const TransactionCard = ({ id, amount, note, created_at, category, type }) => {
   return (
     <div className="bg-gray-700 rounded-lg p-5 flex items-center gap-5 shadow-md flex-auto sm:flex-none sm:w-96">
       <div className="rounded-full bg-gray-400 p-6 flex justify-center items-center">
@@ -32,7 +34,16 @@ const TransactionCard = ({ amount, note, created_at, category,type }) => {
           }-500 font-base text-2xl`}
         >{`$${amount.toFixed(2)}`}</h3>
         <h4 className="text-white">{note}</h4>
-        <p className="text-white">{new Date(created_at).toLocaleDateString()}</p>
+        <p className="text-white">
+          {new Date(created_at).toLocaleDateString()}
+        </p>
+        <Link passHref href={`/transaction-form/edit/${id}`}>
+          <a className="block">
+            <Button type="button" className="bg-white block">
+              Edit
+            </Button>
+          </a>
+        </Link>
       </div>
     </div>
   );
