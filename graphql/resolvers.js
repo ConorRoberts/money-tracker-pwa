@@ -39,6 +39,15 @@ const resolvers = {
     Query: {
         get_client: async (_, { id }) => {
             return await getClient(id);
+        },
+        get_transaction: async (_, { id }) => {
+            try {
+                const transaction = await Transaction.findOne({ _id: id });
+
+                return formatTransaction(transaction);
+            } catch (e) {
+                return null;
+            }
         }
     },
     Mutation: {
@@ -63,6 +72,8 @@ const resolvers = {
             try {
                 const updatedTransaction = await Transaction.findOneAndUpdate({ _id: id }, { ...transaction });
                 await updatedTransaction.save();
+
+                return formatTransaction(updatedTransaction);
             } catch (error) {
                 console.error(error);
             }
@@ -71,7 +82,9 @@ const resolvers = {
         },
         delete_transaction: async (_, { id }) => {
             try {
-                await Transaction.findOneAndDelete({ _id: id });
+                const deletedTransaction = await Transaction.findOneAndDelete({ _id: id });
+
+                return formatTransaction(deletedTransaction);
             } catch (error) {
                 console.error(error);
             }
