@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useSession } from "next-auth/client";
-// import Image from "next/image";
 
 export default function Navigation() {
   const [session, _] = useSession();
@@ -41,7 +40,7 @@ export default function Navigation() {
         {[
           ...ROUTES,
           ...(() => (session ? LOGGED_IN_LINKS : LOGGED_OUT_LINKS))(),
-        ].map(({ path, text, icon }, index) => (
+        ].map(({ path, text }, index) => (
           <li key={`nav-bar-route-${index}`} className="block">
             <Link href={path}>
               <a className={link_style}>{text}</a>
