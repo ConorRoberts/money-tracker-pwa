@@ -32,7 +32,7 @@ export default function Navigation() {
   ];
 
   const link_style =
-    "cursor-pointer p-3 rounded-md hover:bg-gray-900 transition-all block";
+    "cursor-pointer p-3 rounded-sm hover:bg-gray-900 transition duration-100 block";
 
   return (
     <div className="bg-gray-800 text-white font-thin text-lg flex justify-center sm:justify-end px-10 items-start sm:items-center fixed bottom-0 w-full pb-6 sm:pb-0 sm:static z-50">

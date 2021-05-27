@@ -49,7 +49,7 @@ export default function TransactionForm({ id = "", method }) {
     amount: "",
     category: "",
     type: "",
-    created_at: "",
+    created_at: new Date().toISOString().slice(0, 10),
     taxable: false,
   });
 
@@ -75,9 +75,7 @@ export default function TransactionForm({ id = "", method }) {
       taxable: form.taxable,
       amount: +form.amount,
       type: form.category === "revenue" ? "revenue" : "expense",
-      created_at: form.created_at.length
-        ? new Date(...form.created_at.split("-"))
-        : new Date.now(),
+      created_at: new Date(...form.created_at.split("-")),
     };
 
     try {
@@ -113,7 +111,7 @@ export default function TransactionForm({ id = "", method }) {
 
   if (!loading && !session) router.push("/");
   return (
-    <div className="bg-gray-900 min-h-screen flex justify-center items-center">
+    <div className="bg-gray-900 flex justify-center items-center flex-1">
       <form
         className="w-full md:w-1/2 md:mx-auto md:rounded-lg md:shadow-md bg-gray-800 flex flex-col gap-4 p-5"
         onSubmit={handleSubmit}
