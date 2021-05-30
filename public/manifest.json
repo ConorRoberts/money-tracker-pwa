@@ -1,8 +1,8 @@
 {
-  "name": "Next.JS Progressive Web App",
-  "short_name": "Next PWA",
+  "name": "Money Tracker PWA",
+  "short_name": "Money PWA",
   "theme_color": "#ffffff",
-  "background_color": "#004740",
+  "background_color": "#12013b",
   "display": "fullscreen",
   "orientation": "portrait",
   "scope": "/",

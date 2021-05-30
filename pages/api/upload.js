@@ -7,14 +7,11 @@ export const config = {
     }
 };
 
-const post = async (req, res) => {
+export default (req, res) => {
     const form = new formidable.IncomingForm();
     form.parse(req, async function (err, fields, files) {
         const data = await fs.readFile(files.file.path, 'utf8');
         console.log(data);
     });
-};
-export default (req, res) => {
-    post(req, res)
     return res.status(200).send("");
 };

@@ -22,8 +22,7 @@ const ImportData = () => {
     const body = new FormData();
     console.log(body);
     body.append("file", file);
-    const response = await fetch("/api/upload", {
-      method: "POST",
+    await axios.post("/api/upload", {
       body,
     });
     // upload({ variables: { file: file } });
