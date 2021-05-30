@@ -43,6 +43,7 @@ const schema = gql`
         create_transaction(client_id:String!,transaction:TransactionInput!):Transaction
         update_transaction(id:String!,transaction:TransactionInput!): Transaction
         delete_transaction(id:String!): Transaction
+        upload(file:Upload):Boolean!
     }
 `;
 
