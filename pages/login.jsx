@@ -8,8 +8,8 @@ import Image from "next/image";
 
 export const logos = {
   Google: "/Google.svg",
-  GitHub: "/GitHub.svg"
-}
+  GitHub: "/GitHub.svg",
+};
 
 const Login = ({ providers }) => {
   const router = useRouter();
@@ -19,24 +19,17 @@ const Login = ({ providers }) => {
   if (session) router.push("/");
   if (loading) return <Loading />;
   return (
-    <div className="bg-gray-900 min-h-screen flex justify-center items-center flex-col">
+    <div className="bg-gray-900 flex-1 flex justify-center items-center flex-col gap-6">
       <Header title="Login" />
       <>
-        {Object.values(providers).map((provider) =>
-
-        (
-          <div key={provider.name} className="box-border h-16 w-64 border-4 text-right bg-gray-800 grid grid-cols-3 flex space-x-0">
-            <div className="flex items-left pl-5 w-16">
-              <Image
-                width={25}
-                height={25}
-                src={logos[provider.name]}
-              />
-            </div>
-
-            <button className="text-white w-auto col-span-2" onClick={() => signIn(provider.id)}>
-              Sign in with {provider.name}
-            </button>
+        {Object.values(providers).map((provider) => (
+          <div
+            key={provider.name}
+            className="box-border border rounded-sm bg-gray-800 space-x-0 hover:bg-gray-600 transition-all cursor-pointer text-white font-thin text-lg flex py-4 px-6 justify-between gap-5"
+            onClick={() => signIn(provider.id)}
+          >
+            <Image width={25} height={25} src={logos[provider.name]} />
+            <p>Sign in with {provider.name}</p>
           </div>
         ))}
       </>

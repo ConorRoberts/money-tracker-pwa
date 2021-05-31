@@ -3,7 +3,7 @@ import dbConnect from "@utils/dbConnect";
 import typeDefs from "@graphql/schema";
 import resolvers from "@graphql/resolvers";
 
-const apolloServer = new ApolloServer({ typeDefs, resolvers, context: async () => await dbConnect() });
+const apolloServer = new ApolloServer({ typeDefs, resolvers, uploads: false, context: async () => await dbConnect() });
 
 export const config = {
     api: {
