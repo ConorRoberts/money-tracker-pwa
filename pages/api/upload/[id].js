@@ -62,12 +62,12 @@ export default async (req, res) => {
                 .on('end', async () => {
                     const formatted = formatData(results);
 
-                    result = formatted;
+                    result = file;
 
                     await submitData(formatted, user);
                 });
         })
 
 
-    return res.status(200).send({ data: result.slice(0, 100) });
+    return res.status(200).send({ data: result });
 };
