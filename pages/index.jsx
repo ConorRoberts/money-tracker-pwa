@@ -3,11 +3,12 @@ import { useState, useEffect } from "react";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
 import { useSession } from "next-auth/client";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { PieChart, Pie, Legend, Cell, Tooltip, XAxis, Label } from "recharts";
 import { useRouter } from "next/router";
 import Header from "@components/Header";
 import { Select } from "@components/FormComponents";
 import useClient from "@utils/useClient";
+import { categories } from "@components/TransactionCard";
 
 const CustomTooltip = ({ p: { payload } = {} }) => {
   return (
@@ -22,17 +23,56 @@ const CustomTooltip = ({ p: { payload } = {} }) => {
   );
 };
 
+const renderLegend = ({ payload }) => {
+  return (
+    <ul className="flex flex-wrap text-gray-200 mt-16 gap-5 justify-center">
+      {payload.map(({ payload }, index) => (
+        <li key={`item-${index}`} className="flex items-center">
+          <div
+            className="w-4 h-4 border border-white rounded-full mr-2"
+            style={{ backgroundColor: payload.fill }}
+          ></div>
+          <p className="capitalize">{payload.key}</p>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+const capitalize = (str) =>
+  str
+    .split(" ")
+    .map((e) => e[0].toUpperCase() + e.slice(1))
+    .join(" ");
+
+const BLUES = ["#03dffc", "#038cfc", "#59b4ff", "#5988ff"];
+const REDS = ["#ff597a", "#a6334a"];
+const GREENS = ["#47ba79"];
+const YELLOWS = ["#fcba03"];
+const COLOURS = _.shuffle([...BLUES, ...REDS, ...GREENS, ...YELLOWS]);
 const Chart = (props) => {
   return (
-    <BarChart {...props}>
-      <Bar barSize={15} dataKey="value" fill="#ffffff" />
-      <YAxis dataKey="value" />
-      <XAxis dataKey="key" />
-      <Tooltip
-        cursor={{ fill: "transparent" }}
-        content={({ payload: [p] }) => <CustomTooltip p={p} />}
-      />
-    </BarChart>
+    <div>
+      <PieChart width={props.width} height={props.height}>
+        <Pie
+          data={props.data}
+          dataKey="value"
+          cx="50%"
+          cy="50%"
+          outerRadius={props.radius}
+          fill="#8884d8"
+          label={props.label}
+        >
+          {props.data.map((_, index) => (
+            <Cell
+              key={`pie-slice-${index}`}
+              fill={COLOURS[index % COLOURS.length]}
+            />
+          ))}
+        </Pie>
+      </PieChart>
+      {props.legend && <div>Legend</div>}
+    </div>
   );
 };
 
@@ -66,34 +106,62 @@ export default function Home() {
 
   const grouped_transactions = Object.entries(
     _.groupBy(data?.get_client?.transactions, "category")
-  ).map(([key, val]) => ({
-    key,
-    value: val.map((e) => e.amount).reduce((a, b) => a + b, 0),
-  }));
+  )
+    .filter(([key]) => Object.keys(categories).includes(key))
+    .map(([key, val]) => ({
+      key,
+      value: +val
+        .map((e) => e.amount)
+        .reduce((a, b) => a + b, 0)
+        .toFixed(2),
+    }));
 
   return (
     <div className="bg-gray-900 flex flex-1 items-center min-h-screen flex-col p-1 pb-20 sm:pb-0">
       <Header title="Home" />
-      <p className="text-4xl text-white font-sans">
-        ${(revenue_total - expense_total).toLocaleString()}
-      </p>
-      <div className="flex flex-row gap-x-5">
-        <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
-          <p className="text-gray-500">Inc:</p>
-          <p className="text-green-500">${revenue_total?.toLocaleString()}</p>
-        </div>
-        <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
-          <p className="text-gray-500">Exp:</p>
-          <p className="text-red-500">${expense_total?.toLocaleString()}</p>
-        </div>
-      </div>
+      {data.get_client.transactions.length === 0 && (
+        <h2 className="text-4xl text-gray-200 font-semibold mt-6">No Data</h2>
+      )}
+      {data.get_client.transactions.length > 0 && (
+        <>
+          <p className="text-4xl text-white font-sans">
+            ${(revenue_total - expense_total).toLocaleString()}
+          </p>
+          <div className="flex flex-row gap-x-5">
+            <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
+              <p className="text-gray-500">Inc:</p>
+              <p className="text-green-500">
+                ${revenue_total?.toLocaleString()}
+              </p>
+            </div>
+            <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
+              <p className="text-gray-500">Exp:</p>
+              <p className="text-red-500">${expense_total?.toLocaleString()}</p>
+            </div>
+          </div>
 
-      <div className="block md:hidden">
-        <Chart width={350} height={400} data={grouped_transactions} />
-      </div>
-      <div className="hidden md:block">
-        <Chart width={600} height={400} data={grouped_transactions} />
-      </div>
+          <div className="block md:hidden">
+            <Chart
+              width={350}
+              height={400}
+              data={grouped_transactions}
+              radius={150}
+              legend
+            />
+          </div>
+          <div className="hidden md:block">
+            <Chart
+              width={700}
+              height={500}
+              data={grouped_transactions}
+              radius={175}
+              label={(e) =>
+                `${capitalize(e.key)} | ${+(e.percent * 100).toFixed(2)}%`
+              }
+            />
+          </div>
+        </>
+      )}
 
       {/* <div className="flex justify-center items-center w-full">
         <Select className="w-3/4 sm:w-1/4">

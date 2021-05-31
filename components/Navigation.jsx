@@ -18,8 +18,8 @@ export default function Navigation() {
       icon: "/Plus.svg",
     },
     {
-      path: "/api/auth/signout",
-      text: "Logout",
+      path: "/misc",
+      text: "Misc",
       icon: "/Person.svg",
     },
   ];

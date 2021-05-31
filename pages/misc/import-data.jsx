@@ -1,39 +1,46 @@
 import { Input, Button } from "@components/FormComponents";
-import React, { useEffect, useState } from "react";
-import { useMutation, gql } from "@apollo/client";
+import React, { useState } from "react";
 import axios from "axios";
-
-const UPLOAD_FILE = gql`
-  mutation upload($file: Upload) {
-    upload(file: $file)
-  }
-`;
+import { useSession } from "next-auth/client";
+import Loading from "@components/Loading";
+import { useRouter } from "next/router";
 
 const ImportData = () => {
   const [file, setFile] = useState(null);
-
-  const [upload] = useMutation(UPLOAD_FILE, {
-    onCompleted: (data) => console.log(data),
-  });
-  console.log(file);
+  const [session, loading] = useSession();
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const body = new FormData();
-    console.log(body);
-    body.append("file", file);
-    await axios.post("/api/upload", {
-      body,
-    });
-    // upload({ variables: { file: file } });
 
-    // await axios.post("/api/upload", { data: file });
+    const data = new FormData();
+    data.append("file", file);
+
+    await axios.post(`/api/upload/${session.user.id}`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
   };
 
+  if (loading) return <Loading />;
+  if (!loading && !session) {
+    router.push("/login");
+    return <Loading />;
+  }
+
   return (
-    <div>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <Input type="file" onChange={(e) => setFile(e.target.files[0])} />
+    <div className="flex-1 bg-gray-900 flex justify-center items-center">
+      <form
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+        className="rounded-md bg-gray-600 p-6 flex flex-col space-y-5 w-full sm:w-auto mx-3 sm:mx-0"
+      >
+        <Input
+          type="file"
+          accept=".csv"
+          required
+          onChange={(e) => setFile(e.target.files[0])}
+          className="bg-gray-200"
+        />
         <Button type="submit" className="bg-gray-100">
           Submit
         </Button>
