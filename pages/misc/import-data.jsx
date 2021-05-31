@@ -16,9 +16,11 @@ const ImportData = () => {
     const data = new FormData();
     data.append("file", file);
 
-    await axios.post(`/api/upload/${session.user.id}`, data, {
+    const response = await axios.post(`/api/upload/${session.user.id}`, data, {
       headers: { "Content-Type": "multipart/form-data" },
     });
+
+    console.log(response);
   };
 
   if (loading) return <Loading />;
