@@ -2,6 +2,8 @@ import Transaction from "@models/Transaction";
 import Client from "@models/Client";
 import User from "@models/User";
 
+import fs from "fs-extra";
+
 /**
  * Formats mongoose transaction document into something GQL can use
  * @param {*} transactionDocument 

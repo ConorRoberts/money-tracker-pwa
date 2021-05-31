@@ -38,7 +38,9 @@ export default function MyApp({ Component, pageProps }) {
       <ApolloProvider client={client}>
         <Provider session={pageProps.session}>
           <Navigation />
-          <Component {...pageProps} />
+          <div className="flex min-h-screen">
+            <Component {...pageProps} />
+          </div>
         </Provider>
       </ApolloProvider>
     </>
