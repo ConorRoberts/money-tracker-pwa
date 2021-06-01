@@ -39,8 +39,23 @@ const getClient = async (id) => {
 
 const resolvers = {
     Query: {
-        get_client: async (_, { id }) => {
-            return await getClient(id);
+        get_client: async (_, { id, first, last }) => {
+            try {
+                const client = await Client.findOne({ auth: id }).populate("auth").populate("transactions");
+
+                return {
+                    ...client._doc,
+                    id: client.id,
+                    transactions: client._doc.transactions.map(e => formatTransaction(e)).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(first, last),
+                    auth: {
+                        ...client._doc.auth._doc,
+                        created_at: new Date(client._doc.auth.createdAt).toISOString(),
+                        updated_at: new Date(client._doc.auth.updatedAt).toISOString()
+                    }
+                }
+            } catch (e) {
+                return null;
+            }
         },
         get_transaction: async (_, { id }) => {
             try {
