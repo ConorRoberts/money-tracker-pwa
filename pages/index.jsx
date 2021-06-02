@@ -47,17 +47,22 @@ const Chart = (props) => {
         </PieChart>
       </div>
       {props.legend && (
-        <div className={`flex flex-col bg-gray-800 p-3 rounded-md ${!open && "items-center bg-gray-900 mx-auto"}`}>
+        <div
+          className={`flex flex-col bg-gray-800 p-3 rounded-md ${
+            !open && "items-center bg-gray-900 mx-auto"
+          }`}
+        >
           <div className="flex justify-end mb-1">
             <Button
               onClick={() => setOpen(!open)}
-              className="p-2 bg-gray-800 hover:bg-gray-400 transition flex items-center"
+              className="p-2 bg-gray-800 hover:bg-gray-400 transition flex items-center gap-2 justify-center text-gray-200"
             >
               <Image
-                src={open ? "/Minus.svg" : "/Plus_Black.svg"}
+                src={open ? "/Minus.svg" : "/Plus.svg"}
                 width={20}
                 height={20}
               />
+              {!open && <p>Show Legend</p>}
             </Button>
           </div>
           {open && (
