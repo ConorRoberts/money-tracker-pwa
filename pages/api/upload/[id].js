@@ -52,6 +52,8 @@ export default async (req, res) => {
 
     const user = req.query.id;
 
+    let result = [];
+
     let results = [];
     new formidable.IncomingForm().parse(req)
         .on('file', function (name, file) {
@@ -60,11 +62,12 @@ export default async (req, res) => {
                 .on('end', async () => {
                     const formatted = formatData(results);
 
+                    result = file;
+
                     await submitData(formatted, user);
                 });
         })
 
 
-
-    return res.status(200).send("Data Loaded");
+    return res.status(200).send({ data: result });
 };

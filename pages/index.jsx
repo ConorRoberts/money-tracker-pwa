@@ -6,38 +6,10 @@ import { useSession } from "next-auth/client";
 import { PieChart, Pie, Legend, Cell, Tooltip, XAxis, Label } from "recharts";
 import { useRouter } from "next/router";
 import Header from "@components/Header";
-import { Select } from "@components/FormComponents";
+import { Select, Button } from "@components/FormComponents";
 import useClient from "@utils/useClient";
 import { categories } from "@components/TransactionCard";
-
-const CustomTooltip = ({ p: { payload } = {} }) => {
-  return (
-    <div className="bg-white bg-opacity-90 p-3 shadow-md rounded-sm border-indigo-200 border">
-      <p>
-        <span className="mr-2 font-semibold">Category:</span> {payload?.key}
-      </p>
-      <p>
-        <span className="mr-2 font-semibold">Value:</span> ${payload?.value}
-      </p>
-    </div>
-  );
-};
-
-const renderLegend = ({ payload }) => {
-  return (
-    <ul className="flex flex-wrap text-gray-200 mt-16 gap-5 justify-center">
-      {payload.map(({ payload }, index) => (
-        <li key={`item-${index}`} className="flex items-center">
-          <div
-            className="w-4 h-4 border border-white rounded-full mr-2"
-            style={{ backgroundColor: payload.fill }}
-          ></div>
-          <p className="capitalize">{payload.key}</p>
-        </li>
-      ))}
-    </ul>
-  );
-};
+import Image from "next/image";
 
 const capitalize = (str) =>
   str
@@ -45,33 +17,91 @@ const capitalize = (str) =>
     .map((e) => e[0].toUpperCase() + e.slice(1))
     .join(" ");
 
-const BLUES = ["#03dffc", "#038cfc", "#59b4ff", "#5988ff"];
-const REDS = ["#ff597a", "#a6334a"];
-const GREENS = ["#47ba79"];
-const YELLOWS = ["#fcba03"];
-const COLOURS = _.shuffle([...BLUES, ...REDS, ...GREENS, ...YELLOWS]);
 const Chart = (props) => {
+  const [open, setOpen] = useState(false);
   return (
     <div>
-      <PieChart width={props.width} height={props.height}>
-        <Pie
-          data={props.data}
-          dataKey="value"
-          cx="50%"
-          cy="50%"
-          outerRadius={props.radius}
-          fill="#8884d8"
-          label={props.label}
+      <div className="flex justify-center">
+        <PieChart width={props.width} height={props.height}>
+          <Pie
+            data={props.data}
+            dataKey="value"
+            cx="50%"
+            cy="50%"
+            outerRadius={props.radius}
+            fill="#8884d8"
+            label={props.label}
+          >
+            {props.data.map(({ key }, index) => (
+              <Cell
+                key={`pie-slice-${index}`}
+                fill={categories[key].colour ?? "#ff597a"}
+              />
+            ))}
+          </Pie>
+        </PieChart>
+      </div>
+      {props.legend && (
+        <div
+          className={`flex flex-col bg-gray-800 p-3 rounded-md ${
+            !open && "items-center bg-gray-900 mx-auto"
+          }`}
         >
-          {props.data.map((_, index) => (
-            <Cell
-              key={`pie-slice-${index}`}
-              fill={COLOURS[index % COLOURS.length]}
-            />
-          ))}
-        </Pie>
-      </PieChart>
-      {props.legend && <div>Legend</div>}
+          <div className="flex justify-end mb-1">
+            <Button
+              onClick={() => setOpen(!open)}
+              className="p-2 bg-gray-800 hover:bg-gray-400 transition flex items-center gap-2 justify-center text-gray-200"
+            >
+              <Image
+                src={open ? "/Minus.svg" : "/Plus.svg"}
+                width={20}
+                height={20}
+              />
+              {!open && <p>Show Legend</p>}
+            </Button>
+          </div>
+          {open && (
+            <ul className="flex flex-wrap gap-3 animate-fade-in">
+              {props.data
+                .sort((a, b) => {
+                  const total = props.data
+                    .map((e) => e.value)
+                    .reduce((a, b) => a + b, 0);
+
+                  return b.value / total - a.value / total;
+                })
+                .map((e, index) => {
+                  const total = props.data
+                    .map((e) => e.value)
+                    .reduce((a, b) => a + b, 0);
+
+                  return (
+                    <li
+                      className="flex rounded-md bg-gray-700 p-2 justify-between items-center flex-1 whitespace-nowrap"
+                      key={`legend-${index}`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div
+                          className="h-4 w-4 rounded-full border border-white mr-1"
+                          style={{
+                            backgroundColor:
+                              categories[e.key].colour ?? "#ff597a",
+                          }}
+                        ></div>
+                        <p className="capitalize font-semibold text-md text-gray-200">
+                          {`${e.key}`}
+                        </p>
+                      </div>
+                      <p className="capitalize font-medium text-md text-gray-200">
+                        {`${((e.value / total) * 100).toFixed(2)}%`}
+                      </p>
+                    </li>
+                  );
+                })}
+            </ul>
+          )}
+        </div>
+      )}
     </div>
   );
 };
@@ -80,7 +110,8 @@ export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
   const [timePeriod, setTimePeriod] = useState("week");
-  const [data, refetch] = useClient();
+  const [filterBounds, setFilterBounds] = useState({ first: 0, last: 100 });
+  const [data, refetch] = useClient(filterBounds);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -182,14 +213,11 @@ export default function Home() {
         className="flex flex-wrap flex-col sm:flex-row gap-4 sm:gap-10 justify-center mt-5 w-full"
       >
         {/* Sort items in reverse-chronological order */}
-        {data?.get_client?.transactions
-          ?.slice()
-          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-          .map((e, index) => (
-            <div key={`transaction-card-${index}`}>
-              <TransactionCard {...e} className="flex-1" />
-            </div>
-          ))}
+        {data?.get_client?.transactions.map((e, index) => (
+          <div key={`transaction-card-${index}`}>
+            <TransactionCard {...e} className="flex-1" />
+          </div>
+        ))}
       </div>
     </div>
   );

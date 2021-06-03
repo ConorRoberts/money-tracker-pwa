@@ -7,11 +7,13 @@ export default NextAuth({
   providers: [
     Providers.GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_SECRET
+      clientSecret: process.env.GITHUB_SECRET,
+      protection: "none"
     }),
     Providers.Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_SECRET
+      clientSecret: process.env.GOOGLE_SECRET,
+      protection: "none"
     }),
   ],
 
@@ -22,7 +24,7 @@ export default NextAuth({
   },
 
   events: {
-    async signIn({ user,isNewUser }) {
+    async signIn({ user, isNewUser }) {
       await dbConnect();
       if (isNewUser) {
         // Create new client document for this user
