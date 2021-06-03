@@ -15,7 +15,7 @@ export const Input = (props) => {
   return (
     <input
       {...props}
-      className={`p-2 font-thin text-lg shadow-md rounded-md appearance-none ${props.className}`}
+      className={`p-2 shadow-md rounded-md appearance-none ${props.className}`}
     />
   );
 };
@@ -26,9 +26,7 @@ export const Checkbox = (props) => {
       className={`relative rounded-md cursor-pointer flex justify-center items-center ${props.className}`}
     >
       {/* Checkmark */}
-      {props.value ? (
-        <Image layout="fill" src="/Check.svg" className="animate-fade-in" />
-      ) : null}
+      {props.value ? <Image layout="fill" src="/Check.svg" /> : null}
     </div>
   );
 };
@@ -37,7 +35,7 @@ export const Select = (props) => {
   return (
     <select
       {...props}
-      className={`p-3 font-thin rounded-md shadow-md appearance-none ${props.className}`}
+      className={`p-3 rounded-md appearance-none ${props.className}`}
     >
       {props.children}
     </select>

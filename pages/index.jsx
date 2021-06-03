@@ -17,11 +17,6 @@ const capitalize = (str) =>
     .map((e) => e[0].toUpperCase() + e.slice(1))
     .join(" ");
 
-const BLUES = ["#03dffc", "#038cfc", "#59b4ff", "#5988ff"];
-const REDS = ["#ff597a", "#a6334a"];
-const GREENS = ["#47ba79"];
-const YELLOWS = ["#fcba03"];
-const COLOURS = _.shuffle([...BLUES, ...REDS, ...GREENS, ...YELLOWS]);
 const Chart = (props) => {
   const [open, setOpen] = useState(false);
   return (
@@ -37,10 +32,10 @@ const Chart = (props) => {
             fill="#8884d8"
             label={props.label}
           >
-            {props.data.map((_, index) => (
+            {props.data.map(({ key }, index) => (
               <Cell
                 key={`pie-slice-${index}`}
-                fill={COLOURS[index % COLOURS.length]}
+                fill={categories[key].colour ?? "#ff597a"}
               />
             ))}
           </Pie>
@@ -81,12 +76,16 @@ const Chart = (props) => {
                     .reduce((a, b) => a + b, 0);
 
                   return (
-                    <li className="flex rounded-md bg-gray-700 p-2 justify-between items-center flex-1 whitespace-nowrap">
+                    <li
+                      className="flex rounded-md bg-gray-700 p-2 justify-between items-center flex-1 whitespace-nowrap"
+                      key={`legend-${index}`}
+                    >
                       <div className="flex items-center gap-2">
                         <div
                           className="h-4 w-4 rounded-full border border-white mr-1"
                           style={{
-                            backgroundColor: COLOURS[index % COLOURS.length],
+                            backgroundColor:
+                              categories[e.key].colour ?? "#ff597a",
                           }}
                         ></div>
                         <p className="capitalize font-semibold text-md text-gray-200">
