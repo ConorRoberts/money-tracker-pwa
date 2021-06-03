@@ -43,9 +43,8 @@ const Chart = (props) => {
       </div>
       {props.legend && (
         <div
-          className={`flex flex-col bg-gray-800 p-3 rounded-md ${
-            !open && "items-center bg-gray-900 mx-auto"
-          }`}
+          className={`flex flex-col bg-gray-800 p-3 rounded-md ${!open && "items-center bg-gray-900 mx-auto"
+            }`}
         >
           <div className="flex justify-end mb-1">
             <Button
@@ -102,6 +101,59 @@ const Chart = (props) => {
           )}
         </div>
       )}
+      <div className="box-border h-40 w-96 border-0 bg-gray-700 rounded-lg font-thin text-white">
+        <div className="flex justify-between">
+          <div className="pt-1.5 pl-1.5">
+            <Image
+              src="/Icon_Settings.svg"
+              width={30}
+              height={30}
+            />
+          </div>
+          <div className="">
+            <Image
+              src="/Icon_Close.svg"
+              width={50}
+              height={50}
+            />
+          </div>
+        </div>
+
+        <div className="flex pl-4 pb-2">
+          <p>Order by </p>
+          <div className="box-border h-7 w-40 bg-white flex rounded-lg font-thin text-black ml-2">
+            <p></p>
+            <div className="place-self-end">
+              <Image
+                src="/Arrow_Down.svg"
+                width={20}
+                height={20}
+              />
+            </div>
+
+          </div>
+        </div>
+        <div className="flex pl-4 pr-4 pb-2">
+          <p>Search </p>
+          <input class=" box-border h-7 w-40 ml-6 rounded-lg pl-2 pb-2 pt-1 text-gray-700" type="text" placeholder="Search"></input>
+        </div>
+        <div className="flex pl-4 pr-4">
+          <p>Note </p>
+          <div className="box-border h-7 w-40 bg-white flex rounded-lg font-thin text-black ml-9">
+            <div className="place-self-end">
+              <Image
+                src="/Arrow_Down.svg"
+                width={20}
+                height={20}
+              />
+            </div>
+            <p></p>
+          </div>
+        </div>
+      </div>
+      <div>
+
+      </div>
     </div>
   );
 };
