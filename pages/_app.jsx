@@ -15,8 +15,8 @@ export default function MyApp({ Component, pageProps }) {
           name="viewport"
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
         />
-        <meta name="description" content="Description" />
-        <meta name="keywords" content="Keywords" />
+        <meta name="description" content="This is a progressive web app developed by Conor Roberts and Adrian Alexander. The purpose of this app is to simplify the process of tracking spendings/earnings." />
+        <meta name="keywords" content="conor roberts,adrian alexander,money,finance,pwa,app,website" />
         <title>Money Tracker PWA</title>
 
         <link rel="manifest" href="/manifest.json" />
@@ -32,13 +32,15 @@ export default function MyApp({ Component, pageProps }) {
           type="image/png"
           sizes="32x32"
         />
-        <link rel="apple-touch-icon" href="/apple-icon.png"></link>
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"></link>
         <meta name="theme-color" content="#317EFB" />
       </Head>
       <ApolloProvider client={client}>
         <Provider session={pageProps.session}>
           <Navigation />
-          <Component {...pageProps} />
+          <div className="flex min-h-screen">
+            <Component {...pageProps} />
+          </div>
         </Provider>
       </ApolloProvider>
     </>

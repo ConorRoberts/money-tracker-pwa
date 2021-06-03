@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useSession } from "next-auth/client";
-// import Image from "next/image";
 
 export default function Navigation() {
   const [session, _] = useSession();
@@ -19,8 +18,8 @@ export default function Navigation() {
       icon: "/Plus.svg",
     },
     {
-      path: "/api/auth/signout",
-      text: "Logout",
+      path: "/misc",
+      text: "Misc",
       icon: "/Person.svg",
     },
   ];
@@ -33,7 +32,7 @@ export default function Navigation() {
   ];
 
   const link_style =
-    "cursor-pointer p-3 rounded-md hover:bg-gray-900 transition-all block";
+    "cursor-pointer p-3 rounded-sm hover:bg-gray-900 transition duration-100 block";
 
   return (
     <div className="bg-gray-800 text-white font-thin text-lg flex justify-center sm:justify-end px-10 items-start sm:items-center fixed bottom-0 w-full pb-6 sm:pb-0 sm:static z-50">
@@ -41,7 +40,7 @@ export default function Navigation() {
         {[
           ...ROUTES,
           ...(() => (session ? LOGGED_IN_LINKS : LOGGED_OUT_LINKS))(),
-        ].map(({ path, text, icon }, index) => (
+        ].map(({ path, text }, index) => (
           <li key={`nav-bar-route-${index}`} className="block">
             <Link href={path}>
               <a className={link_style}>{text}</a>
