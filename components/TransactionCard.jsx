@@ -4,17 +4,20 @@ import Link from "next/link";
 import { Button } from "@components/FormComponents";
 
 export const categories = {
-  groceries: "/Card_Grocery.svg",
-  clothing: "/Card_Clothes.svg",
-  "office expense": "/Card_Office.svg",
-  other: "/Card_Other.svg",
-  "maintenance & repairs": "/Card_Repairs.svg",
-  revenue: "/Card_Revenue.svg",
-  travel: "/Card_Travel.svg",
-  technology: "/Card_Technology.svg",
-  rent: "/Card_Rent.svg",
-  eating: "/Card_Eating.svg",
-  "meals & entertainment": "/Card_Entertainment.svg",
+  groceries: { image: "/Card_Grocery.svg", colour: "#f2bd2c" },
+  clothing: { image: "/Card_Clothes.svg", colour: "#5d32a8" },
+  "office expense": { image: "/Card_Office.svg", colour: "#ffdc7d" },
+  other: { image: "/Card_Other.svg", colour: "#a6334a" },
+  "maintenance & repairs": { image: "/Card_Repairs.svg" },
+  revenue: { image: "/Card_Revenue.svg", colour: "#47ba79" },
+  travel: { image: "/Card_Travel.svg", colour: "#03dffc" },
+  technology: { image: "/Card_Technology.svg", colour: "#3244a8" },
+  rent: { image: "/Card_Rent.svg", colour: "#59b4ff" },
+  eating: { image: "/Card_Eating.svg", colour: "#5988ff" },
+  "meals & entertainment": {
+    image: "/Card_Entertainment.svg",
+    colour: "#9432a8",
+  },
 };
 
 const TransactionCard = ({ id, amount, note, created_at, category, type }) => {
@@ -24,7 +27,7 @@ const TransactionCard = ({ id, amount, note, created_at, category, type }) => {
         <Image
           width={25}
           height={25}
-          src={categories[category] ?? categories["other"]}
+          src={categories[category]?.image ?? categories["other"].image}
         />
       </div>
       <div className="flex flex-col justify-evenly flex-1">
@@ -34,14 +37,15 @@ const TransactionCard = ({ id, amount, note, created_at, category, type }) => {
           }-500 font-base text-2xl`}
         >{`$${amount.toFixed(2)}`}</h3>
         <h4 className="text-white">{note}</h4>
-        <p className="text-white">
-          {new Date(created_at).toDateString()}
-        </p>
+        <p className="text-white">{new Date(created_at).toDateString()}</p>
         <div className="absolute top-1 right-1">
           <Link passHref href={`/transaction-form/edit/${id}`}>
             <a>
-              <Button type="button" className="px-3 py-2 hover:bg-gray-400 transition-all">
-                <Image src="/Pencil.svg" width={15} height={15}/>
+              <Button
+                type="button"
+                className="px-3 py-2 hover:bg-gray-400 transition-all"
+              >
+                <Image src="/Pencil.svg" width={15} height={15} />
               </Button>
             </a>
           </Link>

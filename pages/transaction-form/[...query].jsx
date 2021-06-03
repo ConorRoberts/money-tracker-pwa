@@ -102,8 +102,17 @@ export default function TransactionForm({ id = "", method }) {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    const { name, type = "text", value } = e.target;
+    setForm({
+      ...form,
+      [name]:
+        type === "tel"
+          ? value
+              .split("")
+              .filter((e) => !isNaN(e))
+              .join("")
+          : value,
+    });
   };
 
   if (loading) return <Loading />;
@@ -118,7 +127,7 @@ export default function TransactionForm({ id = "", method }) {
       >
         <Input
           placeholder="Amount"
-          type="number"
+          type="tel"
           name="amount"
           step=".01"
           onChange={handleChange}
@@ -163,7 +172,10 @@ export default function TransactionForm({ id = "", method }) {
           />
         </div>
         <div className="flex justify-center text-white">
-          <Button type="Submit" className="bg-gray-600">
+          <Button
+            type="Submit"
+            className="bg-gray-600 hover:bg-gray-300 hover:text-gray-800 transition"
+          >
             Submit
           </Button>
         </div>
