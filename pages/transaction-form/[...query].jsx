@@ -109,7 +109,7 @@ export default function TransactionForm({ id = "", method }) {
         type === "tel"
           ? value
               .split("")
-              .filter((e) => !isNaN(e))
+              .filter((e) => !isNaN(e) || e===".")
               .join("")
           : value,
     });
@@ -129,7 +129,6 @@ export default function TransactionForm({ id = "", method }) {
           placeholder="Amount"
           type="tel"
           name="amount"
-          step=".01"
           onChange={handleChange}
           value={form.amount}
         />
