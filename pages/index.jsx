@@ -2,6 +2,8 @@ import _ from "lodash";
 import { useState, useEffect } from "react";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
+import Options from "@components/Options";
+
 import { useSession } from "next-auth/client";
 import { PieChart, Pie, Legend, Cell, Tooltip, XAxis, Label } from "recharts";
 import { useRouter } from "next/router";
@@ -115,7 +117,7 @@ export default function Home() {
   const [filterBounds, setFilterBounds] = useState({ first: 0, last: 100 });
   const [data, refetch] = useClient(filterBounds);
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState(false);
+  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -152,28 +154,45 @@ export default function Home() {
     }));
 
   return (
-    <div className="bg-gray-900 flex flex-1 items-center min-h-screen flex-col p-1 pb-20 sm:pb-0">
+    <div className="bg-gray-900 flex flex-1 items-center min-h-screen flex-col p-1 pb-20 sm:pb-0 relative">
       <Header title="Home" />
       {data.get_client.transactions.length === 0 && (
         <h2 className="text-4xl text-gray-200 font-semibold mt-6">No Data</h2>
       )}
       {data.get_client.transactions.length > 0 && (
         <>
-          <p className="text-4xl text-white font-sans">
-            ${(revenue_total - expense_total).toLocaleString()}
-          </p>
-          <div className="flex flex-row gap-x-5">
-            <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
-              <p className="text-gray-500">Inc:</p>
-              <p className="text-green-500">
-                ${revenue_total?.toLocaleString()}
-              </p>
-            </div>
-            <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
-              <p className="text-gray-500">Exp:</p>
-              <p className="text-red-500">${expense_total?.toLocaleString()}</p>
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-4xl text-white font-sans">
+              ${(revenue_total - expense_total).toLocaleString()}
+            </p>
+            <div className="flex flex-row gap-x-5">
+              <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
+                <p className="text-gray-500">Inc:</p>
+                <p className="text-green-500">
+                  ${revenue_total?.toLocaleString()}
+                </p>
+              </div>
+              <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
+                <p className="text-gray-500">Exp:</p>
+                <p className="text-red-500">${expense_total?.toLocaleString()}</p>
+              </div>
             </div>
           </div>
+            <div className="absolute top-2 right-2 cursor-pointer">
+              <Image
+                onClick={() => setOpen(!open)}
+                src="/Icon_Settings.svg"
+                height={30}
+                width={30}
+              />
+              <div></div>
+              {open && (
+
+                <Options
+                  setOpen = {setOpen}
+                />
+              )}
+            </div>
 
           <div className="block md:hidden">
             <Chart
@@ -195,98 +214,7 @@ export default function Home() {
               }
             />
           </div>
-          {!open && (
-              <div className="flex justify-center mb-1">
-                <Button
-                  onClick={() => setOpen(!open)}
-                  className="p-2 bg-gray-800 hover:bg-gray-400 transition flex items-center gap-2 justify-center text-gray-200"
-                >
 
-                  <Image
-                    src="/Plus.svg"
-                    width={20}
-                    height={20}
-                  />
-                  {!open && <p>Options</p>}
-                </Button>
-              </div>)}
-            {open && (
-              <div className="flex justify-center">
-                <div className="box-border h-50 w-96 border-0 bg-gray-700 rounded-lg font-thin text-white">
-                  <div className="flex justify-between">
-                    <div className="pt-2 pl-2.5">
-                      <Image
-                        src="/Icon_Settings.svg"
-                        width={30}
-                        height={30}
-                      />
-                    </div>
-
-                    <div onClick={() => setOpen(!open)} className="">
-                      <Image
-                        src="/Icon_Close.svg"
-                        width={55}
-                        height={55}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    {/* Left side */}
-                    <div>
-                      <div className="flex pl-4 pb-2">
-                        <p>Order by</p>
-                        <select className="box-border h-7 w-40 rounded-lg font-thin text-black ml-2">
-                          <option>Week</option>
-                          <option>Day</option>
-                          <option>Month</option>
-                        </select>
-                      </div>
-                      <div className="flex pl-4 pr-4 pb-2">
-                        <p>Search </p>
-                        <input class=" box-border h-7 w-40 ml-6 rounded-lg pl-2 pb-2 pt-1 text-gray-700" type="text" placeholder="Search"></input>
-                      </div>
-                      <div className="flex pl-4 pr-4">
-                        <p>Field</p>
-                        <select className="box-border h-7 w-40 rounded-lg font-thin text-black ml-9">
-                          <option>Note</option>
-                          <option>Category</option>
-                          <option>Type</option>
-                        </select>
-                      </div>
-                    </div>
-
-                    {/* Right side */}
-                    <div>
-                      <div className="flex flex-col">
-                        <div className="ml-6">
-                          <p>
-                            Layout
-                          </p>
-                        </div>
-                        <div className="mr-5">
-                          {selected && (
-                            <div onClick={() => setSelected(!selected)}>
-                              <Image
-                                src="/Layout_Full.svg"
-                                height={100}
-                                width={100}
-                              />
-                            </div>)}
-
-                          {!selected && (
-                            <div onClick={() => setSelected(!selected)}>
-                              <Image
-                                src="/Layout_Compact.svg"
-                                height={100}
-                                width={100}
-                              />
-                            </div>)}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>)}
         </>
       )}
 
