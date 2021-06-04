@@ -45,8 +45,9 @@ const Chart = (props) => {
       </div>
       {props.legend && (
         <div
-          className={`flex flex-col bg-gray-800 p-3 rounded-md ${!open && "items-center bg-gray-900 mx-auto"
-            }`}
+          className={`flex flex-col bg-gray-800 p-3 rounded-md ${
+            !open && "items-center bg-gray-900 mx-auto"
+          }`}
         >
           <div className="flex justify-end mb-1">
             <Button
@@ -103,9 +104,7 @@ const Chart = (props) => {
           )}
         </div>
       )}
-      <div>
-
-      </div>
+      <div></div>
     </div>
   );
 };
@@ -114,10 +113,9 @@ export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
   const [timePeriod, setTimePeriod] = useState("week");
-  const [filterBounds, setFilterBounds] = useState({ first: 0, last: 100 });
+  const [filterBounds, setFilterBounds] = useState({ first: 0, last: 10000 });
   const [data, refetch] = useClient(filterBounds);
   const [open, setOpen] = useState(false);
-  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -174,25 +172,21 @@ export default function Home() {
               </div>
               <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
                 <p className="text-gray-500">Exp:</p>
-                <p className="text-red-500">${expense_total?.toLocaleString()}</p>
+                <p className="text-red-500">
+                  ${expense_total?.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>
-            <div className="absolute top-2 right-2 cursor-pointer">
-              <Image
-                onClick={() => setOpen(!open)}
-                src="/Icon_Settings.svg"
-                height={30}
-                width={30}
-              />
-              <div></div>
-              {open && (
-
-                <Options
-                  setOpen = {setOpen}
-                />
-              )}
-            </div>
+          <div className="absolute top-2 right-2 cursor-pointer">
+            <Image
+              onClick={() => setOpen(!open)}
+              src="/Icon_Settings.svg"
+              height={30}
+              width={30}
+            />
+          </div>
+          {open && <Options setOpen={setOpen} />}
 
           <div className="block md:hidden">
             <Chart
@@ -214,7 +208,6 @@ export default function Home() {
               }
             />
           </div>
-
         </>
       )}
 

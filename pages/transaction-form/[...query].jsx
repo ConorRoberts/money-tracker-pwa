@@ -24,6 +24,7 @@ const CREATE_TRANSACTION = gql`
     }
   }
 `;
+
 const GET_TRANSACTION = gql`
   query getTransaction($id: String!) {
     get_transaction(id: $id) {
