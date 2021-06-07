@@ -2,6 +2,8 @@ import _ from "lodash";
 import { useState, useEffect } from "react";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
+import Options from "@components/Options";
+
 import { useSession } from "next-auth/client";
 import { PieChart, Pie, Legend, Cell, Tooltip, XAxis, Label } from "recharts";
 import { useRouter } from "next/router";
@@ -102,6 +104,7 @@ const Chart = (props) => {
           )}
         </div>
       )}
+      <div></div>
     </div>
   );
 };
@@ -110,8 +113,9 @@ export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
   const [timePeriod, setTimePeriod] = useState("week");
-  const [filterBounds, setFilterBounds] = useState({ first: 0, last: 100 });
+  const [filterBounds, setFilterBounds] = useState({ first: 0, last: 10000 });
   const [data, refetch] = useClient(filterBounds);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -148,28 +152,41 @@ export default function Home() {
     }));
 
   return (
-    <div className="bg-gray-900 flex flex-1 items-center min-h-screen flex-col p-1 pb-20 sm:pb-0">
+    <div className="bg-gray-900 flex flex-1 items-center min-h-screen flex-col p-1 pb-20 sm:pb-0 relative">
       <Header title="Home" />
       {data.get_client.transactions.length === 0 && (
         <h2 className="text-4xl text-gray-200 font-semibold mt-6">No Data</h2>
       )}
       {data.get_client.transactions.length > 0 && (
         <>
-          <p className="text-4xl text-white font-sans">
-            ${(revenue_total - expense_total).toLocaleString()}
-          </p>
-          <div className="flex flex-row gap-x-5">
-            <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
-              <p className="text-gray-500">Inc:</p>
-              <p className="text-green-500">
-                ${revenue_total?.toLocaleString()}
-              </p>
-            </div>
-            <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
-              <p className="text-gray-500">Exp:</p>
-              <p className="text-red-500">${expense_total?.toLocaleString()}</p>
+          <div className="flex flex-col items-center gap-3">
+            <p className="text-4xl text-white font-sans">
+              ${(revenue_total - expense_total).toLocaleString()}
+            </p>
+            <div className="flex flex-row gap-x-5">
+              <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
+                <p className="text-gray-500">Inc:</p>
+                <p className="text-green-500">
+                  ${revenue_total?.toLocaleString()}
+                </p>
+              </div>
+              <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
+                <p className="text-gray-500">Exp:</p>
+                <p className="text-red-500">
+                  ${expense_total?.toLocaleString()}
+                </p>
+              </div>
             </div>
           </div>
+          <div className="absolute top-2 right-2 cursor-pointer">
+            <Image
+              onClick={() => setOpen(!open)}
+              src="/Icon_Settings.svg"
+              height={30}
+              width={30}
+            />
+          </div>
+          {open && <Options setOpen={setOpen} />}
 
           <div className="block md:hidden">
             <Chart

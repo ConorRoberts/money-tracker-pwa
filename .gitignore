@@ -33,3 +33,5 @@ yarn-error.log*
 # vercel
 .vercel
 pages/form.jsx
+package-lock.json
+package-lock.json
