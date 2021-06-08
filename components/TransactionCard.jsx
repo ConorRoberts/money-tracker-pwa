@@ -45,7 +45,7 @@ const TransactionCard = ({ id, amount, note, created_at, category, type }) => {
                 type="button"
                 className="px-3 py-2 hover:bg-gray-400 transition-all"
               >
-                <Image src="/Pencil.svg" width={15} height={15} />
+                <Image src="/Pencil_White.svg" width={15} height={15} />
               </Button>
             </a>
           </Link>
