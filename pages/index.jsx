@@ -5,10 +5,10 @@ import TransactionCard from "@components/TransactionCard";
 import Options from "@components/Options";
 
 import { useSession } from "next-auth/client";
-import { PieChart, Pie, Legend, Cell, Tooltip, XAxis, Label } from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 import { useRouter } from "next/router";
 import Header from "@components/Header";
-import { Select, Button } from "@components/FormComponents";
+import { Button } from "@components/FormComponents";
 import useClient from "@utils/useClient";
 import { categories } from "@components/TransactionCard";
 import Image from "next/image";
@@ -52,7 +52,7 @@ const Chart = (props) => {
           <div className="flex justify-end mb-1">
             <Button
               onClick={() => setOpen(!open)}
-              className="p-2 bg-gray-800 hover:bg-gray-400 transition flex items-center gap-2 justify-center text-gray-200"
+              className="p-2 flex items-center gap-2 justify-center bg-gray-800 text-gray-100 hover:bg-gray-600"
             >
               <Image
                 src={open ? "/Minus.svg" : "/Plus.svg"}
@@ -104,23 +104,34 @@ const Chart = (props) => {
           )}
         </div>
       )}
-      <div></div>
     </div>
   );
 };
 
+const CARD_INCREMENT = 15;
+const REFRESH_DELAY = 2500;
+
 export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
-  const [timePeriod, setTimePeriod] = useState("week");
-  const [filterBounds, setFilterBounds] = useState({ first: 0, last: 10000 });
-  const [data, refetch] = useClient(filterBounds);
+  const [optionsState, setOptionsState] = useState({
+    timePeriod: "month",
+    compact: false,
+    search: "",
+    field: "",
+    bounds: "25",
+  });
+  const [data, refetch] = useClient({
+    first: 0,
+    last: optionsState.bounds === "all" ? -1 : +optionsState.bounds,
+  });
   const [open, setOpen] = useState(false);
+  const [cardChunk, setCardChunk] = useState(CARD_INCREMENT);
 
   useEffect(() => {
     const interval = setInterval(() => {
       refetch();
-    }, 5000);
+    }, REFRESH_DELAY);
     return () => {
       clearInterval(interval);
     };
@@ -182,11 +193,18 @@ export default function Home() {
             <Image
               onClick={() => setOpen(!open)}
               src="/Icon_Settings.svg"
-              height={30}
-              width={30}
+              priority
+              height={25}
+              width={25}
             />
           </div>
-          {open && <Options setOpen={setOpen} />}
+          {open && (
+            <Options
+              setOpen={setOpen}
+              state={optionsState}
+              setState={setOptionsState}
+            />
+          )}
 
           <div className="block md:hidden">
             <Chart
@@ -230,11 +248,21 @@ export default function Home() {
         className="flex flex-wrap flex-col sm:flex-row gap-4 sm:gap-10 justify-center mt-5 w-full"
       >
         {/* Sort items in reverse-chronological order */}
-        {data?.get_client?.transactions.map((e, index) => (
-          <div key={`transaction-card-${index}`}>
-            <TransactionCard {...e} className="flex-1" />
-          </div>
+        {data?.get_client?.transactions.slice(0, cardChunk).map((e, index) => (
+          <TransactionCard
+            {...e}
+            className="flex-1"
+            key={`transaction-card-${index}`}
+          />
         ))}
+      </div>
+      <div className="flex justify-center">
+        <div
+          className="bg-gray-800 p-3 rounded-md my-3 hover:bg-gray-600 transition cursor-pointer flex items-center"
+          onClick={() => setCardChunk(cardChunk + CARD_INCREMENT)}
+        >
+          <Image src="/Plus.svg" width={25} height={25} />
+        </div>
       </div>
     </div>
   );
