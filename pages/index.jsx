@@ -10,14 +10,10 @@ import { useRouter } from "next/router";
 import Header from "@components/Header";
 import { Button } from "@components/FormComponents";
 import useClient from "@utils/useClient";
-import { categories } from "@components/TransactionCard";
+import categories from "@utils/categories";
 import Image from "next/image";
-
-const capitalize = (str) =>
-  str
-    .split(" ")
-    .map((e) => e[0].toUpperCase() + e.slice(1))
-    .join(" ");
+import capitalize from "@utils/capitalize";
+import CompactTransactionCard from "@components/CompactTransactionCard";
 
 const Chart = (props) => {
   const [open, setOpen] = useState(false);
@@ -52,7 +48,7 @@ const Chart = (props) => {
           <div className="flex justify-end mb-1">
             <Button
               onClick={() => setOpen(!open)}
-              className="p-2 flex items-center gap-2 justify-center bg-gray-800 text-gray-100 hover:bg-gray-600"
+              className="p-2 flex items-center gap-2 justify-center bg-gray-800 text-gray-100 hover:bg-gray-600 rounded-md transition"
             >
               <Image
                 src={open ? "/Minus.svg" : "/Plus.svg"}
@@ -229,32 +225,29 @@ export default function Home() {
         </>
       )}
 
-      {/* <div className="flex justify-center items-center w-full">
-        <Select className="w-3/4 sm:w-1/4">
-          {["day", "week", "month", "year"].map((e, index) => (
-            <option
-              key={`${e}-${index}`}
-              value={e}
-              onChange={(e) => setTimePeriod(e.target.value)}
-            >
-              {e}
-            </option>
-          ))}
-        </Select>
-      </div> */}
-
       <div
         name="transactions"
-        className="flex flex-wrap flex-col sm:flex-row gap-4 sm:gap-10 justify-center mt-5 w-full"
+        className={`flex flex-wrap flex-row gap-2 ${
+          optionsState.compact ? "sm:gap-3" : "sm:gap-6"
+        } justify-center mt-5 w-full`}
       >
         {/* Sort items in reverse-chronological order */}
-        {data?.get_client?.transactions.slice(0, cardChunk).map((e, index) => (
-          <TransactionCard
-            {...e}
-            className="flex-1"
-            key={`transaction-card-${index}`}
-          />
-        ))}
+        {data?.get_client?.transactions
+          .slice(0, cardChunk)
+          .map((e, index) =>
+            optionsState.compact ? (
+              <CompactTransactionCard
+                {...e}
+                key={`transaction-card-${index}`}
+              />
+            ) : (
+              <TransactionCard
+                {...e}
+                className="flex-1"
+                key={`transaction-card-${index}`}
+              />
+            )
+          )}
       </div>
       <div className="flex justify-center">
         <div
