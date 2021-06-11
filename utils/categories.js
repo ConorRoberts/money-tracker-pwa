@@ -1,5 +1,5 @@
 const categories = {
-    groceries: { image: "/Card_Grocery.svg", colour: "#f2bd2c" },
+    // groceries: { image: "/Card_Grocery.svg", colour: "#f2bd2c" },
     // clothing: { image: "/Card_Clothes.svg", colour: "#5d32a8" },
     "office expense": { image: "/Card_Office.svg", colour: "#ffdc7d" },
     other: { image: "/Card_Other.svg", colour: "#a6334a" },

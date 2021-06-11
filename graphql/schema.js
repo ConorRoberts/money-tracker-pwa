@@ -10,12 +10,14 @@ const schema = gql`
         created_at:String!
         taxable:Boolean!
         type:String!
+        subcategory:String!
     }
 
     input TransactionInput {
         note: String!
         type:String!
         category:String!
+        subcategory:String!
         amount:Float!
         taxable:Boolean!
         created_at:String
@@ -37,6 +39,7 @@ const schema = gql`
     type Query {
         get_client(id:String!,first:Int,last:Int):Client!
         get_transaction(id:String!):Transaction!
+        get_client_categories(id:String!):[String!]
     }
 
     type Mutation {

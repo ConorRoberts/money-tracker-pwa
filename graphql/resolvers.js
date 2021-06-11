@@ -52,6 +52,15 @@ const resolvers = {
             } catch (e) {
                 return null;
             }
+        },
+        get_client_categories: async (_, { id }) => {
+            try {
+                const client = await Client.findOne({ auth: id }).populate("transactions").populate("auth");
+
+                return client?.transactions.map(e => e?.subcategory ?? null).filter((e, _, arr) => e && !arr.includes(e));
+            } catch (e) {
+                return null;
+            }
         }
     },
     Mutation: {

@@ -13,6 +13,7 @@ import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import categories from "@utils/categories";
 import Image from "next/image";
 import capitalize from "@utils/capitalize";
+import useClientCategories from "@utils/useClientCategories";
 
 const UPDATE_TRANSACTION = gql`
   mutation updateTransaction($id: String!, $transaction: TransactionInput!) {
@@ -74,10 +75,15 @@ export default function TransactionForm({ id = "", method }) {
     note: "",
     amount: "",
     category: "",
+    subcategory: "",
     type: "",
     created_at: DATE_DEFAULT,
     taxable: false,
   });
+
+  const [subcategories] = useClientCategories();
+  console.log(subcategories);
+  // const [customSubcategory, setCustomSubcategory] = useState(false);
 
   useEffect(() => {
     if (method === "edit") getTransaction({ variables: { id: id } });
@@ -142,9 +148,10 @@ export default function TransactionForm({ id = "", method }) {
   if (method === "edit" && !data) return <Loading />;
 
   if (!loading && !session) router.push("/");
+
   return (
     <div className="bg-gray-900 flex-1 p-2">
-      <div className="w-full md:w-1/2 mx-auto md:rounded-lg md:shadow-md bg-gray-800 mt-2 sm:mt-16 rounded-md shadow-md">
+      <div className="w-full md:w-3/4 xl:w-1/3 mx-auto md:rounded-lg md:shadow-md bg-gray-800 mt-2 sm:mt-16 rounded-md shadow-md">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
           {method === "edit" && (
             <div className="flex justify-end">
@@ -167,28 +174,50 @@ export default function TransactionForm({ id = "", method }) {
               value={form.amount}
             />
           </div>
-          {/* <Select
-          name="category"
-          value={capitalize(form.category)}
-          onChange={handleChange}
-        >
-          <option value="" disabled>
-            Choose a category
-          </option>
-
-          {Object.keys(categories).map((e, index) => (
-            <option key={`${e}-${index}`} value={e}>
-              {capitalize(e)}
-            </option>
-          ))}
-        </Select> */}
           <div>
             <Label>Category</Label>
-            <div className="flex gap-3 flex-wrap">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 grid-flow-row">
               {Object.keys(categories).map((e, categoryIdx) => (
                 <Button
                   key={`category-${categoryIdx}`}
                   onClick={() => setForm({ ...form, category: e })}
+                  type="button"
+                  className={`${
+                    form.category === e
+                      ? "bg-green-700 text-gray-100"
+                      : "bg-white hover:bg-green-100 transition"
+                  } p-3 rounded-md shadow-md whitespace-nowrap transition font-medium ${
+                    e.length > 12 && "col-span-2 row-span-1"
+                  }}`}
+                >
+                  {capitalize(e)}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>Sub-Category</Label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 grid-flow-row">
+              {subcategories?.get_client_categories?.map((e, categoryIdx) => (
+                <p>{e}</p>
+              ))}
+            </div>
+          </div>
+          {/* {form.subcategory === "custom" && (
+            <div>
+              <Label>New Subcategory</Label>
+              <Input
+                type="text"
+                onChange={handleChange}
+                value={form.subcategory}
+              />
+            </div>
+          )} */}
+          {/* <div className="flex gap-3 flex-wrap">
+              {Object.keys(categories).map((e, categoryIdx) => (
+                <Button
+                key={`category-${categoryIdx}`}
+                onClick={() => setForm({ ...form, category: e })}
                   type="button"
                   className={`${
                     form.category === e
@@ -199,8 +228,7 @@ export default function TransactionForm({ id = "", method }) {
                   {capitalize(e)}
                 </Button>
               ))}
-            </div>
-          </div>
+            </div> */}
           <div>
             <Label>Note</Label>
             <Input

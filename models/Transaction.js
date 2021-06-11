@@ -14,6 +14,10 @@ const transactionSchema = new Schema({
         type: String,
         default: "other"
     },
+    subcategory: {
+        type: String,
+        default: "other"
+    },
     amount: {
         type: Number,
         default: 0
