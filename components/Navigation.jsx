@@ -1,42 +1,16 @@
 import Link from "next/link";
 import { useSession } from "next-auth/client";
+import { ROUTES, LOGGED_IN_LINKS, LOGGED_OUT_LINKS } from "@utils/routes";
 
-export default function Navigation() {
+const link_style =
+  "cursor-pointer py-3 px-7 rounded-sm hover:bg-green-700 hover:text-gray-100 transition duration-200 block text-white font-medium text-lg";
+
+export const TopNavigation = () => {
   const [session, _] = useSession();
 
-  const ROUTES = [
-    {
-      path: "/",
-      text: "Home",
-      icon: "/Home.svg",
-    },
-  ];
-  const LOGGED_IN_LINKS = [
-    {
-      path: "/transaction-form/new",
-      text: "Form",
-      icon: "/Plus.svg",
-    },
-    {
-      path: "/misc",
-      text: "Misc",
-      icon: "/Person.svg",
-    },
-  ];
-  const LOGGED_OUT_LINKS = [
-    {
-      path: "/login",
-      text: "Login",
-      icon: "/Person.svg",
-    },
-  ];
-
-  const link_style =
-    "cursor-pointer p-3 rounded-sm hover:bg-gray-900 transition duration-100 block";
-
   return (
-    <div className="bg-gray-800 text-white font-thin text-lg flex justify-center sm:justify-end px-10 items-start sm:items-center fixed bottom-0 w-full pb-6 sm:pb-0 sm:static z-50">
-      <ul className="flex list-none gap-10 sm:gap-0">
+    <div className="bg-gray-800 sm:flex justify-end items-start w-full hidden">
+      <ul className="flex list-none">
         {[
           ...ROUTES,
           ...(() => (session ? LOGGED_IN_LINKS : LOGGED_OUT_LINKS))(),
@@ -50,4 +24,24 @@ export default function Navigation() {
       </ul>
     </div>
   );
-}
+};
+export const BottomNavigation = () => {
+  const [session, _] = useSession();
+
+  return (
+    <div className="bg-gray-800 fixed bottom-0 w-full sm:hidden px-10">
+      <ul className="flex list-none gap-8 justify-center pb-6">
+        {[
+          ...ROUTES,
+          ...(() => (session ? LOGGED_IN_LINKS : LOGGED_OUT_LINKS))(),
+        ].map(({ path, text }, index) => (
+          <li key={`nav-bar-route-${index}`} className="block">
+            <Link href={path}>
+              <a className={link_style}>{text}</a>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};

@@ -10,8 +10,9 @@ import { useRouter } from "next/router";
 import Loading from "@components/Loading";
 import { useSession } from "next-auth/client";
 import { gql, useMutation, useLazyQuery } from "@apollo/client";
-import { categories } from "@components/TransactionCard";
+import categories from "@utils/categories";
 import Image from "next/image";
+import capitalize from "@utils/capitalize";
 
 const UPDATE_TRANSACTION = gql`
   mutation updateTransaction($id: String!, $transaction: TransactionInput!) {
@@ -95,7 +96,7 @@ export default function TransactionForm({ id = "", method }) {
     e.preventDefault();
 
     const transaction = {
-      category: form.category,
+      category: form.category.toLowerCase(),
       note: form.note,
       taxable: form.taxable,
       amount: +form.amount,
@@ -128,16 +129,10 @@ export default function TransactionForm({ id = "", method }) {
   };
 
   const handleChange = (e) => {
-    const { name, type = "text", value } = e.target;
+    const { name, value } = e.target;
     setForm({
       ...form,
-      [name]:
-        type === "tel"
-          ? value
-              .split("")
-              .filter((e) => !isNaN(e) || e === ".")
-              .join("")
-          : value,
+      [name]: value,
     });
   };
 
@@ -146,75 +141,92 @@ export default function TransactionForm({ id = "", method }) {
 
   if (!loading && !session) router.push("/");
   return (
-    <div className="bg-gray-900 flex justify-center items-center flex-1">
-      <form
-        className="w-full md:w-1/2 md:mx-auto md:rounded-lg md:shadow-md bg-gray-800 flex flex-col gap-4 p-5"
-        onSubmit={handleSubmit}
-      >
-        {method === "edit" && (
-          <div className="flex justify-end">
-            <div
-              className="rounded-md hover:bg-gray-700 transition p-3 flex items-center cursor-pointer"
-              onClick={()=>deleteTransaction({ variables: { id } })}
-            >
-              <Image src="/Trash_White.svg" width={20} height={20} />
+    <div className="bg-gray-900 flex-1 p-2">
+      <div className="w-full md:w-1/2 mx-auto md:rounded-lg md:shadow-md bg-gray-800 mt-2 sm:mt-16 rounded-md shadow-md">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
+          {method === "edit" && (
+            <div className="flex justify-end">
+              <div
+                className="rounded-md hover:bg-gray-700 transition p-3 flex items-center cursor-pointer"
+                onClick={() => deleteTransaction({ variables: { id } })}
+              >
+                <Image src="/Trash_White.svg" width={20} height={20} />
+              </div>
             </div>
-          </div>
-        )}
-        <Input
-          placeholder="Amount"
-          type="number"
-          name="amount"
-          onChange={handleChange}
-          value={form.amount}
-        />
-        <Select
+          )}
+          <Label>Amount</Label>
+          <Input
+            placeholder="Amount"
+            type="number"
+            name="amount"
+            step=".01"
+            onChange={handleChange}
+            value={form.amount}
+          />
+          {/* <Select
           name="category"
-          value={form.category}
+          value={capitalize(form.category)}
           onChange={handleChange}
-          className="capitalize"
         >
           <option value="" disabled>
             Choose a category
           </option>
 
           {Object.keys(categories).map((e, index) => (
-            <option className="capitalize" key={`${e}-${index}`} value={e}>
-              {e}
+            <option key={`${e}-${index}`} value={e}>
+              {capitalize(e)}
             </option>
           ))}
-        </Select>
-        <Input
-          placeholder="Note"
-          type="text"
-          name="note"
-          onChange={handleChange}
-          value={form.note}
-        />
-        <Input
-          type="date"
-          name="created_at"
-          onChange={handleChange}
-          value={form.created_at}
-        />
-        <div className="flex flex-col items-center">
-          <Label>Taxable?</Label>
-          <Checkbox
-            className="w-7 h-7"
-            name="taxable"
-            value={form.taxable}
-            onClick={() => setForm({ ...form, taxable: !form.taxable })}
+        </Select> */}
+          <Label>Category</Label>
+          <div className="flex gap-3 flex-wrap">
+            {Object.keys(categories).map((e, categoryIdx) => (
+              <Button
+                key={`category-${categoryIdx}`}
+                onClick={() => setForm({ ...form, category: e })}
+                type="button"
+                className={`${
+                  form.category === e ? "bg-green-700 text-gray-100" : "bg-white hover:bg-green-100 transition"
+                } p-3 rounded-md shadow-md whitespace-nowrap flex-1 transition font-medium`}
+              >
+                {capitalize(e)}
+              </Button>
+            ))}
+          </div>
+          <Label>Note</Label>
+          <Input
+            placeholder="Note"
+            type="text"
+            name="note"
+            onChange={handleChange}
+            value={form.note}
           />
-        </div>
-        <div className="flex justify-center">
-          <Button
-            type="Submit"
-            className="bg-gray-700 text-white hover:bg-gray-500"
-          >
-            Submit
-          </Button>
-        </div>
-      </form>
+          <Label>Date</Label>
+          <Input
+            type="date"
+            name="created_at"
+            onChange={handleChange}
+            value={form.created_at}
+          />
+          <div className="flex flex-col items-center">
+            <Label>Taxable?</Label>
+            <Checkbox
+              className="w-7 h-7"
+              name="taxable"
+              value={form.taxable}
+              onClick={() => setForm({ ...form, taxable: !form.taxable })}
+            />
+          </div>
+          <div className="flex justify-center">
+            <Button
+              type="submit"
+              className="rounded-md bg-green-700 transition text-gray-100 px-5 py-2 hover:bg-green-900"
+            >
+              Submit
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

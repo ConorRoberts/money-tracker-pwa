@@ -15,71 +15,73 @@ export default function Options({ setOpen, setState, state }) {
 
   return (
     <PopupContainer setOpen={setOpen} passRef={ref}>
-      <div className="flex justify-center mt-10" ref={ref}>
-        <div className="bg-gray-700 rounded-lg p-4">
+      <div className="flex justify-center p-2" ref={ref}>
+        <div className="bg-gray-700 rounded-lg p-4 w-full md:w-1/3">
           <div className="flex justify-end">
             <div
               onClick={() => setOpen(!open)}
-              className="cursor-pointer p-2 hover:bg-gray-600 rounded-lg flex items-center transition"
+              className="cursor-pointer p-2 hover:bg-gray-600 rounded-lg flex items-center transition mb-3"
             >
               <Image src="/Minus.svg" priority width={20} height={20} />
             </div>
           </div>
+          <div className="flex gap-2 mb-5">
+            <Label>Search </Label>
+            <Input
+              type="text"
+              placeholder="Search"
+              onChange={handleChange}
+              name="search"
+              value={state.search}
+            />
+          </div>
           <div className="flex gap-3">
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 flex-1">
               <div className="flex">
                 <Label className="w-1/3">Order by</Label>
-                <Select
-                  className="w-2/3"
-                  onChange={handleChange}
-                  name="timePeriod"
-                  value={state.timePeriod}
-                >
-                  <option value="week">Week</option>
-                  <option value="day">Day</option>
-                  <option value="month">Month</option>
-                </Select>
-              </div>
-              <div className="flex">
-                <Label className="w-1/3">Search </Label>
-                <Input
-                  type="text"
-                  placeholder="Search"
-                  onChange={handleChange}
-                  name="search"
-                  className="w-2/3"
-                  value={state.search}
-                />
+                <div className="w-2/3">
+                  <Select
+                    onChange={handleChange}
+                    name="timePeriod"
+                    value={state.timePeriod}
+                  >
+                    <option value="week">Week</option>
+                    <option value="day">Day</option>
+                    <option value="month">Month</option>
+                  </Select>
+                </div>
               </div>
               <div className="flex">
                 <Label className="w-1/3">Field</Label>
-                <Select
-                  className="w-2/3"
-                  onChange={handleChange}
-                  name="field"
-                  value={state.field}
-                >
-                  <option value="note">Note</option>
-                  <option value="category">Category</option>
-                  <option value="type">Type</option>
-                </Select>
+                <div className="w-2/3">
+                  <Select
+                    onChange={handleChange}
+                    name="field"
+                    value={state.field}
+                  >
+                    <option value="note">Note</option>
+                    <option value="category">Category</option>
+                    <option value="type">Type</option>
+                  </Select>
+                </div>
               </div>
               <div className="flex">
-                <Label className="w-1/3">Bounds</Label>
-                <Select
-                  className="w-2/3"
-                  onChange={handleChange}
-                  name="bounds"
-                  value={state.bounds}
-                >
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                  <option value="250">250</option>
-                  <option value="500">500</option>
-                  <option value="all">No Limit</option>
-                </Select>
+                <Label className="w-1/3">Limit</Label>
+                <div className="w-2/3">
+                  <Select
+                    onChange={handleChange}
+                    name="bounds"
+                    value={state.bounds}
+                  >
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="250">250</option>
+                    <option value="500">500</option>
+                    <option value="all">No Limit</option>
+                  </Select>
+                </div>
               </div>
             </div>
 

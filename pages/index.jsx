@@ -10,14 +10,9 @@ import { useRouter } from "next/router";
 import Header from "@components/Header";
 import { Button } from "@components/FormComponents";
 import useClient from "@utils/useClient";
-import { categories } from "@components/TransactionCard";
+import categories from "@utils/categories";
 import Image from "next/image";
-
-const capitalize = (str) =>
-  str
-    .split(" ")
-    .map((e) => e[0].toUpperCase() + e.slice(1))
-    .join(" ");
+import capitalize from "@utils/capitalize";
 
 const Chart = (props) => {
   const [open, setOpen] = useState(false);
@@ -229,23 +224,9 @@ export default function Home() {
         </>
       )}
 
-      {/* <div className="flex justify-center items-center w-full">
-        <Select className="w-3/4 sm:w-1/4">
-          {["day", "week", "month", "year"].map((e, index) => (
-            <option
-              key={`${e}-${index}`}
-              value={e}
-              onChange={(e) => setTimePeriod(e.target.value)}
-            >
-              {e}
-            </option>
-          ))}
-        </Select>
-      </div> */}
-
       <div
         name="transactions"
-        className="flex flex-wrap flex-col sm:flex-row gap-4 sm:gap-10 justify-center mt-5 w-full"
+        className="flex flex-wrap flex-col sm:flex-row gap-2 sm:gap-10 justify-center mt-5 w-full"
       >
         {/* Sort items in reverse-chronological order */}
         {data?.get_client?.transactions.slice(0, cardChunk).map((e, index) => (

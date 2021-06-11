@@ -3,7 +3,8 @@ import Head from "next/head";
 import "tailwindcss/tailwind.css";
 import { ApolloProvider } from "@apollo/client";
 import client from "@lib/apollo-client";
-import Navigation from "@components/Navigation";
+import { TopNavigation } from "@components/Navigation";
+import { BottomNavigation } from "@components/Navigation";
 
 export default function MyApp({ Component, pageProps }) {
   return (
@@ -15,8 +16,14 @@ export default function MyApp({ Component, pageProps }) {
           name="viewport"
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no"
         />
-        <meta name="description" content="This is a progressive web app developed by Conor Roberts and Adrian Alexander. The purpose of this app is to simplify the process of tracking spendings/earnings." />
-        <meta name="keywords" content="conor roberts,adrian alexander,money,finance,pwa,app,website" />
+        <meta
+          name="description"
+          content="This is a progressive web app developed by Conor Roberts and Adrian Alexander. The purpose of this app is to simplify the process of tracking spendings/earnings."
+        />
+        <meta
+          name="keywords"
+          content="conor roberts,adrian alexander,money,finance,pwa,app,website"
+        />
         <title>Money Tracker PWA</title>
 
         <link rel="manifest" href="/manifest.json" />
@@ -37,9 +44,10 @@ export default function MyApp({ Component, pageProps }) {
       </Head>
       <ApolloProvider client={client}>
         <Provider session={pageProps.session}>
-          <Navigation />
-          <div className="flex min-h-screen">
+          <div className="flex flex-col min-h-screen">
+            <TopNavigation />
             <Component {...pageProps} />
+            <BottomNavigation />
           </div>
         </Provider>
       </ApolloProvider>

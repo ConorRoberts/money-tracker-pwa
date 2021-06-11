@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@components/FormComponents";
 import categories from "@utils/categories";
 
-export default function TransactionCard({
+export default function CompactTransactionCard({
   id,
   amount,
   note,
@@ -27,7 +27,7 @@ export default function TransactionCard({
             type === "revenue" ? "green" : "red"
           }-500 font-normal text-2xl`}
         >{`$${amount.toFixed(2)}`}</h3>
-        {note && <p className="text-white text-md">{note}</p>}
+        <p className="text-white text-md">{note}</p>
         <p className="text-white text-sm">
           {new Date(created_at).toDateString()}
         </p>

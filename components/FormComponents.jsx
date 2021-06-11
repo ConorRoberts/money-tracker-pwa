@@ -1,14 +1,19 @@
 import React, { useState } from "react";
 import Image from "next/image";
 
-export const Button = ({ children, type = "button", onClick, className }) => {
+export const Button = (props) => {
+  const styles = "focus:ring-0 focus:outline-none appearance-none";
   return (
     <button
-      className={`px-4 py-2 rounded-md transition focus:ring-0 focus:outline-none appearance-none ${className}`}
-      onClick={onClick}
-      type={type}
+      {...props}
+      className={
+        props.className
+          ? `${props.className} ${styles}`
+          : `px-4 py-2 rounded-md transition ${styles}`
+      }
+      type={props.type ?? "button"}
     >
-      {children}
+      {props.children}
     </button>
   );
 };
@@ -17,7 +22,7 @@ export const Input = (props) => {
   return (
     <input
       {...props}
-      className={`rounded-md w-full border border-gray-300 py-1 px-2 focus:ring-1 focus:outline-none appearance-none ${props.className}`}
+      className={`bg-white rounded-md w-full border border-gray-300 py-1 px-2 focus:ring-1 focus:outline-none appearance-none ${props.className}`}
     />
   );
 };
@@ -26,7 +31,7 @@ export const TextArea = (props) => {
   return (
     <textarea
       {...props}
-      className={`rounded-md w-full py-1 px-2 border border-gray-300 focus:ring-1 focus:outline-none ${props.className}`}
+      className={`rounded-md w-full py-1 px-2 border border-gray-300 focus:ring-1 focus:outline-none bg-white ${props.className}`}
     />
   );
 };
@@ -34,21 +39,21 @@ export const Select = (props) => {
   const [open, setOpen] = useState(false);
 
   const onBlur = (e) => {
-    if (props.onBlur) props?.onBlur();
+    if (props.onBlur) props?.onBlur(e);
     if (open) {
       setOpen(!open);
     }
   };
   const onClick = (e) => {
-    if (props.onClick) props?.onClick();
+    if (props.onClick) props?.onClick(e);
     setOpen(!open);
   };
 
   return (
-    <div className={`relative w-full flex items-center ${props.className}`}>
+    <div className={`relative w-full flex items-center`}>
       <select
+        className={`py-1 px-2 w-full rounded-md appearance-none focus:ring-1 focus:outline-none border border-gray-300 bg-white`}
         {...props}
-        className={`py-1 px-2 w-full rounded-md appearance-none focus:ring-1 focus:outline-none border border-gray-300`}
         onBlur={onBlur}
         onClick={onClick}
       >
@@ -74,7 +79,6 @@ export const Label = ({ children, className }) => {
 };
 
 export const Checkbox = (props) => {
-  console.log(props);
   return (
     <div
       {...props}
