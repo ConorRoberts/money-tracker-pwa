@@ -13,7 +13,7 @@ export default function TransactionCard({
   type,
 }) {
   return (
-    <div className="bg-gray-700 rounded-lg p-2 flex items-center gap-5 shadow-md flex-auto sm:flex-none sm:w-96 relative">
+    <div className="bg-gray-700 rounded-lg p-2 flex items-center gap-5 shadow-md sm:flex-none w-96 relative">
       <div className="rounded-full bg-gray-300 p-5 flex justify-center items-center">
         <Image
           width={20}
@@ -36,7 +36,7 @@ export default function TransactionCard({
             <a>
               <Button
                 type="button"
-                className="px-3 py-2 hover:bg-gray-400 transition-all"
+                className="px-3 py-2 hover:bg-gray-400 transition rounded-md"
               >
                 <Image src="/Pencil_White.svg" width={15} height={15} />
               </Button>

@@ -3,7 +3,7 @@ import { useSession } from "next-auth/client";
 import { ROUTES, LOGGED_IN_LINKS, LOGGED_OUT_LINKS } from "@utils/routes";
 
 const link_style =
-  "cursor-pointer py-3 px-7 rounded-sm hover:bg-green-700 hover:text-gray-100 transition duration-200 block text-white font-medium text-lg";
+  "cursor-pointer py-2 px-6 rounded-md hover:bg-green-700 hover:text-gray-100 transition duration-200 block text-white font-medium text-lg";
 
 export const TopNavigation = () => {
   const [session, _] = useSession();

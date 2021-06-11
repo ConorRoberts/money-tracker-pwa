@@ -95,16 +95,18 @@ export default function TransactionForm({ id = "", method }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const date = form.created_at.split("-");
+
     const transaction = {
       category: form.category.toLowerCase(),
       note: form.note,
       taxable: form.taxable,
       amount: +form.amount,
-      type: form.category === "revenue" ? "revenue" : "expense",
+      type: form.category.toLowerCase() === "revenue" ? "revenue" : "expense",
       created_at:
         form.created_at === DATE_DEFAULT
           ? new Date()
-          : new Date(...form.created_at.split("-")),
+          : new Date(date[0], date[1] - 1, date[2]),
     };
 
     try {
@@ -154,15 +156,17 @@ export default function TransactionForm({ id = "", method }) {
               </div>
             </div>
           )}
-          <Label>Amount</Label>
-          <Input
-            placeholder="Amount"
-            type="number"
-            name="amount"
-            step=".01"
-            onChange={handleChange}
-            value={form.amount}
-          />
+          <div>
+            <Label>Amount</Label>
+            <Input
+              placeholder="Amount"
+              type="number"
+              name="amount"
+              step=".01"
+              onChange={handleChange}
+              value={form.amount}
+            />
+          </div>
           {/* <Select
           name="category"
           value={capitalize(form.category)}
@@ -178,36 +182,44 @@ export default function TransactionForm({ id = "", method }) {
             </option>
           ))}
         </Select> */}
-          <Label>Category</Label>
-          <div className="flex gap-3 flex-wrap">
-            {Object.keys(categories).map((e, categoryIdx) => (
-              <Button
-                key={`category-${categoryIdx}`}
-                onClick={() => setForm({ ...form, category: e })}
-                type="button"
-                className={`${
-                  form.category === e ? "bg-green-700 text-gray-100" : "bg-white hover:bg-green-100 transition"
-                } p-3 rounded-md shadow-md whitespace-nowrap flex-1 transition font-medium`}
-              >
-                {capitalize(e)}
-              </Button>
-            ))}
+          <div>
+            <Label>Category</Label>
+            <div className="flex gap-3 flex-wrap">
+              {Object.keys(categories).map((e, categoryIdx) => (
+                <Button
+                  key={`category-${categoryIdx}`}
+                  onClick={() => setForm({ ...form, category: e })}
+                  type="button"
+                  className={`${
+                    form.category === e
+                      ? "bg-green-700 text-gray-100"
+                      : "bg-white hover:bg-green-100 transition"
+                  } p-3 rounded-md shadow-md whitespace-nowrap flex-1 transition font-medium`}
+                >
+                  {capitalize(e)}
+                </Button>
+              ))}
+            </div>
           </div>
-          <Label>Note</Label>
-          <Input
-            placeholder="Note"
-            type="text"
-            name="note"
-            onChange={handleChange}
-            value={form.note}
-          />
-          <Label>Date</Label>
-          <Input
-            type="date"
-            name="created_at"
-            onChange={handleChange}
-            value={form.created_at}
-          />
+          <div>
+            <Label>Note</Label>
+            <Input
+              placeholder="Note"
+              type="text"
+              name="note"
+              onChange={handleChange}
+              value={form.note}
+            />
+          </div>
+          <div>
+            <Label>Date</Label>
+            <Input
+              type="date"
+              name="created_at"
+              onChange={handleChange}
+              value={form.created_at}
+            />
+          </div>
           <div className="flex flex-col items-center">
             <Label>Taxable?</Label>
             <Checkbox

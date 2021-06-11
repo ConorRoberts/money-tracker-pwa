@@ -16,17 +16,17 @@ export default function Options({ setOpen, setState, state }) {
   return (
     <PopupContainer setOpen={setOpen} passRef={ref}>
       <div className="flex justify-center p-2" ref={ref}>
-        <div className="bg-gray-700 rounded-lg p-4 w-full md:w-1/3">
-          <div className="flex justify-end">
+        <div className="bg-gray-700 rounded-lg px-4 py-2 w-full md:w-2/3 lg:w-1/2 relative">
+          <div className="flex justify-end mb-1">
             <div
               onClick={() => setOpen(!open)}
-              className="cursor-pointer p-2 hover:bg-gray-600 rounded-lg flex items-center transition mb-3"
+              className="cursor-pointer p-3 hover:bg-gray-600 rounded-lg flex items-center transition"
             >
-              <Image src="/Minus.svg" priority width={20} height={20} />
+              <Image src="/CloseIcon.svg" priority width={13} height={13} />
             </div>
           </div>
-          <div className="flex gap-2 mb-5">
-            <Label>Search </Label>
+          <div className="flex flex-col sm:flex-row gap-2 mb-5">
+            <Label>Search</Label>
             <Input
               type="text"
               placeholder="Search"
@@ -35,11 +35,11 @@ export default function Options({ setOpen, setState, state }) {
               value={state.search}
             />
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex flex-col gap-2 flex-1">
-              <div className="flex">
-                <Label className="w-1/3">Order by</Label>
-                <div className="w-2/3">
+              <div className="flex flex-col sm:flex-row">
+                <Label className="sm:w-1/3">Order by</Label>
+                <div className="sm:w-2/3">
                   <Select
                     onChange={handleChange}
                     name="timePeriod"
@@ -51,9 +51,9 @@ export default function Options({ setOpen, setState, state }) {
                   </Select>
                 </div>
               </div>
-              <div className="flex">
-                <Label className="w-1/3">Field</Label>
-                <div className="w-2/3">
+              <div className="flex flex-col sm:flex-row">
+                <Label className="sm:w-1/3">Field</Label>
+                <div className="sm:w-2/3">
                   <Select
                     onChange={handleChange}
                     name="field"
@@ -65,9 +65,9 @@ export default function Options({ setOpen, setState, state }) {
                   </Select>
                 </div>
               </div>
-              <div className="flex">
-                <Label className="w-1/3">Limit</Label>
-                <div className="w-2/3">
+              <div className="flex flex-col sm:flex-row">
+                <Label className="sm:w-1/3">Limit</Label>
+                <div className="sm:w-2/3">
                   <Select
                     onChange={handleChange}
                     name="bounds"
