@@ -11,7 +11,15 @@ export const logos = {
   GitHub: "/GitHub.svg",
 };
 
-const Login = ({ providers }) => {
+interface Provider {
+  id: string,
+  name: string,
+  type: string,
+  signinUrl: string,
+  callbackUrl: string,
+}
+
+const Login = ({ providers }: { providers: [Provider] }) => {
   const router = useRouter();
 
   const [session, loading] = useSession();

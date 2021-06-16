@@ -16,10 +16,10 @@ const schema = gql`
     input TransactionInput {
         note: String!
         type:String!
-        category:String!
-        subcategory:String!
+        category:String
+        subcategory:String
         amount:Float!
-        taxable:Boolean!
+        taxable:Boolean
         created_at:String
     }
     type Auth {

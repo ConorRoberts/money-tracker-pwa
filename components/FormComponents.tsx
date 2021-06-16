@@ -1,7 +1,14 @@
 import React, { useState } from "react";
 import Image from "next/image";
 
-export const Button = (props) => {
+interface ButtonProps {
+  className?: string,
+  children: any,
+  type?: any,
+  onClick?: any
+}
+
+export const Button = (props: ButtonProps) => {
   const styles = "focus:ring-0 focus:outline-none appearance-none";
   return (
     <button
@@ -18,7 +25,17 @@ export const Button = (props) => {
   );
 };
 
-export const Input = (props) => {
+interface InputProps {
+  className?: string,
+  placeholder?: string,
+  type: string,
+  name?: string,
+  step?: string,
+  onChange?: any
+  value?: string
+}
+
+export const Input = (props: InputProps) => {
   return (
     <input
       {...props}
@@ -27,7 +44,11 @@ export const Input = (props) => {
   );
 };
 
-export const TextArea = (props) => {
+interface TextAreaProps {
+  className: string
+}
+
+export const TextArea = (props: TextAreaProps) => {
   return (
     <textarea
       {...props}
@@ -35,7 +56,15 @@ export const TextArea = (props) => {
     />
   );
 };
-export const Select = (props) => {
+
+interface SelectProps {
+  className: string,
+  onBlur: any,
+  onClick: any,
+  children: any
+}
+
+export const Select = (props: SelectProps) => {
   const [open, setOpen] = useState(false);
 
   const onBlur = (e) => {
@@ -60,9 +89,8 @@ export const Select = (props) => {
         {props.children}
       </select>
       <div
-        className={`absolute right-1 top-0 flex items-center bottom-0 transform transition-transform duration-75 ${
-          open && "rotate-180"
-        }`}
+        className={`absolute right-1 top-0 flex items-center bottom-0 transform transition-transform duration-75 ${open && "rotate-180"
+          }`}
       >
         <Image width={22} height={22} src="/Arrow_Down.svg" />
       </div>
@@ -70,7 +98,12 @@ export const Select = (props) => {
   );
 };
 
-export const Label = ({ children, className }) => {
+interface LabelProps {
+  className?: string,
+  children: any
+}
+
+export const Label = ({ children, className }: LabelProps) => {
   return (
     <p className={`text-lg font-semibold text-gray-100 ${className}`}>
       {children}
@@ -78,7 +111,14 @@ export const Label = ({ children, className }) => {
   );
 };
 
-export const Checkbox = (props) => {
+interface CheckboxProps {
+  className?: string,
+  value: boolean,
+  name?: string,
+  onClick?: any
+}
+
+export const Checkbox = (props: CheckboxProps) => {
   return (
     <div
       {...props}
@@ -90,9 +130,8 @@ export const Checkbox = (props) => {
       />
       {/* Checkmark */}
       <div
-        className={`absolute cursor-pointer top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 filter ${
-          props.value ? "opacity-100" : "opacity-0"
-        }`}
+        className={`absolute cursor-pointer top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 filter ${props.value ? "opacity-100" : "opacity-0"
+          }`}
       >
         <Image layout="fill" src="/Check.svg" priority />
       </div>
@@ -100,7 +139,12 @@ export const Checkbox = (props) => {
   );
 };
 
-export const Tooltip = (props) => {
+interface TooltipProps {
+  className: string,
+  text: string
+}
+
+export const Tooltip = (props: TooltipProps) => {
   const [visible, setVisible] = useState(false);
   return (
     <div

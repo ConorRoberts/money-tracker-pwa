@@ -12,10 +12,19 @@ module.exports = {
           '100%': {
             opacity: '1',
           },
+        },
+        'slide-in-left': {
+          '0%': {
+            right: '-100%',
+          },
+          '100%': {
+            right: '0',
+          },
         }
       },
       animation: {
-        'fade-in': 'fade-in 0.2s'
+        'fade-in': 'fade-in 0.2s',
+        'slide-in-left': 'slide-in-left 0.2s ease-in-out',
       }
     },
   },
