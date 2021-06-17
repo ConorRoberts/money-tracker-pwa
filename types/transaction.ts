@@ -1,5 +1,5 @@
 export default interface Transaction {
-    created_at: Date,
+    created_at: string,
     type: string,
     subcategory: string,
     category: string,

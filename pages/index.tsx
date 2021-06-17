@@ -5,115 +5,15 @@ import TransactionCard from "@components/TransactionCard";
 import Options from "@components/Options";
 
 import { useSession } from "next-auth/client";
-import { PieChart, Pie, Cell, LineChart, CartesianGrid, XAxis, YAxis, Line, Legend } from "recharts";
+import Chart from "@components/Home/Chart";
 import { useRouter } from "next/router";
 import Header from "@components/Header";
-import { Button } from "@components/FormComponents";
 import useClient from "@utils/useClient";
-import categories from "@utils/categories";
 import Image from "next/image";
 import capitalize from "@utils/capitalize";
 import CompactTransactionCard from "@components/CompactTransactionCard";
-import getWeekStart from "@utils/getWeekStart";
 import type Transaction from "@typedefs/transaction";
-
-const Chart = (props: any) => {
-  const [open, setOpen] = useState(false);
-  return (
-    <div>
-      <div className="flex justify-center">
-        {/* <PieChart width={props.width} height={props.height}>
-          <Pie
-            data={props.data}
-            dataKey="value"
-            cx="50%"
-            cy="50%"
-            outerRadius={props.radius}
-            fill="#8884d8"
-            label={props.label}
-          >
-            {props.data.map(({ key }: { key: string }, index: number) => (
-              <Cell
-                key={`pie-slice-${index}`}
-                fill={categories[key].colour ?? "#ff597a"}
-              />
-            ))}
-          </Pie>
-        </PieChart> */}
-        <LineChart width={props.width+50} height={props.height} data={props.data}
-          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          {/* <XAxis dataKey="key" /> */}
-          <YAxis/>
-          {/* <Tooltip /> */}
-          <Legend />
-          <Line type="monotone" dataKey="revenue" stroke="#84d88b" />
-          <Line type="monotone" dataKey="expense" stroke="#f86a6a" />
-        </LineChart>
-      </div>
-      {props.legend && (
-        <div
-          className={`flex flex-col bg-gray-800 p-3 rounded-md ${!open && "items-center bg-gray-900 mx-auto"
-            }`}
-        >
-          <div className="flex justify-end mb-1">
-            <Button
-              onClick={() => setOpen(!open)}
-              className="p-2 flex items-center gap-2 justify-center bg-gray-800 text-gray-100 hover:bg-gray-600 rounded-md transition"
-            >
-              <Image
-                src={open ? "/Minus.svg" : "/Plus.svg"}
-                width={20}
-                height={20}
-              />
-              {!open && <p>Show Legend</p>}
-            </Button>
-          </div>
-          {open && (
-            <ul className="flex flex-wrap gap-3 animate-fade-in">
-              {props.data
-                .sort((a: any, b: any) => {
-                  const total = props.data
-                    .map((e: any) => e.value)
-                    .reduce((a: number, b: number) => a + b, 0);
-
-                  return b.value / total - a.value / total;
-                })
-                .map((e: any, index: number) => {
-                  const total = props.data
-                    .map((e: any) => e.value)
-                    .reduce((a: number, b: number) => a + b, 0);
-
-                  return (
-                    <li
-                      className="flex rounded-md bg-gray-700 p-2 justify-between items-center flex-1 whitespace-nowrap"
-                      key={`legend-${index}`}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="h-4 w-4 rounded-full border border-white mr-1"
-                          style={{
-                            backgroundColor:
-                              categories[e.key].colour ?? "#ff597a",
-                          }}
-                        ></div>
-                        <p className="capitalize font-semibold text-md text-gray-200">
-                          {`${e.key}`}
-                        </p>
-                      </div>
-                      <p className="capitalize font-medium text-md text-gray-200">
-                        {`${((e.value / total) * 100).toFixed(2)}%`}
-                      </p>
-                    </li>
-                  );
-                })}
-            </ul>
-          )}
-        </div>
-      )}
-    </div>
-  );
-};
+import getWeekStart from "@utils/getWeekStart";
 
 const CARD_INCREMENT = 15;
 const REFRESH_DELAY = 2500;
@@ -165,27 +65,6 @@ export default function Home() {
     .map((e: any) => e.amount)
     .reduce((a: number, b: number) => a + b, 0);
 
-  const grouped_transactions = Object.entries(_.groupBy(data?.get_client?.transactions.map((e: any) => ({ ...e, created_at: e.created_at.slice(0, 10) })), "created_at")).map(([key, value]): { key: any, value: any } => ({
-    key, revenue: +value.filter((e): any => e.type === "revenue").map((e: any) => e.amount).reduce((a: number, b: number) => a + b, 0)
-      .toFixed(2), expense: +value.filter((e): any => e.type === "expense").map((e: any) => e.amount).reduce((a: number, b: number) => a + b, 0)
-        .toFixed(2),
-  }));
-  //     .reduce((a: number, b: number) => a + b, 0)
-  //     .toFixed(2),}))
-
-  // const grouped_transactions = Object.entries(
-  //   _.groupBy(data?.get_client?.transactions.map((e: any) => ({ ...e, created_at: e.created_at.slice(0, 10) })), "created_at")
-  // )
-  // .filter(([key]) => Object.keys(categories).includes(key))
-  // .map(([key, val]: any) => ({
-  //   key,
-  //   value: +val.map((e: any) => e.amount)
-  //     .reduce((a: number, b: number) => a + b, 0)
-  //     .toFixed(2),
-  // }));
-
-  console.log(grouped_transactions);
-
   return (
     <div className="bg-gray-900 flex flex-1 items-center min-h-screen flex-col p-1 pb-20 sm:pb-0 relative" >
       <Header title="Home" />
@@ -236,20 +115,18 @@ export default function Home() {
               <Chart
                 width={350}
                 height={400}
-                data={grouped_transactions}
-                radius={150}
-                legend
+                data={getChartData(data?.get_client?.transactions)}
+              // legend
               />
             </div>
             <div className="hidden md:block">
               <Chart
                 width={700}
                 height={500}
-                data={grouped_transactions}
-                radius={175}
-                label={(e: any) =>
-                  `${capitalize(e.key)} | ${+(e.percent * 100).toFixed(2)}%`
-                }
+                data={getChartData(data?.get_client?.transactions)}
+              // label={(e: any) =>
+              //   `${capitalize(e.key)} | ${+(e.percent * 100).toFixed(2)}%`
+              // }
               />
             </div>
           </>
@@ -290,4 +167,26 @@ export default function Home() {
       </div>
     </div >
   );
+}
+
+/**
+ * Formats a list of transactions so that their data can be used by the charts
+ * @param transactions 
+ * @returns 
+ */
+const getChartData = (transactions: Transaction[]): { key: string, revenue: number, expense: number }[] => {
+
+  const getSum = (list: Transaction[], type: string): number => {
+    return +list.filter((e: Transaction) => e.type === type).map((e: Transaction) => e.amount).reduce((a: number, b: number) => a + b, 0)
+      .toFixed(2)
+  }
+
+  const groupedByDate = Object.entries(_.groupBy(transactions.map((e: Transaction) => ({ ...e, created_at: getWeekStart(new Date(e.created_at.slice(0, 10))).toDateString() })), "created_at")).reverse();
+
+  const groupedByType = groupedByDate.map(([key, value]: [key: string, value: Transaction[]]): { key: string, revenue: number, expense: number } => ({
+    key: key.split(" ").slice(1, 3).join(" "), revenue: getSum(value, "revenue")
+    , expense: getSum(value, "expense"),
+  })).slice(-4);
+
+  return groupedByType;
 }
