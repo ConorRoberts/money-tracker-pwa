@@ -54,7 +54,7 @@ export default function Home() {
   }, [refetch]);
 
   if (!loading && !session) router.push("/login");
-  if (loading || !data || !session) return <Loading />;
+  if (loading || !data || !data?.get_client || !session) return <Loading />;
 
   const revenue_total = data?.get_client?.transactions
     .filter((e: any) => e?.type?.toLowerCase() === "revenue")
