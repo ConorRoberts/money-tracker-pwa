@@ -22,7 +22,7 @@ export default function useClient({ first, last }) {
   const [session, _] = useSession();
 
   const { data, refetch } = useQuery(GET_USER_DATA, {
-    variables: { id: session?.user.id, first, last },
+    variables: { id: session?.user.id ?? " ", first, last },
   });
 
   return [data, refetch];
