@@ -56,6 +56,8 @@ export default function Home() {
   if (!loading && !session) router.push("/login");
   if (loading || !data || !data?.get_client || !session) return <Loading />;
 
+  console.log(data);
+
   const revenue_total = data?.get_client?.transactions
     .filter((e: any) => e?.type?.toLowerCase() === "revenue")
     .map((e: any) => e.amount)
