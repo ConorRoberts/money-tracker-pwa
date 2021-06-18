@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import { Schema } from "mongoose";
 
-const transactionSchema = new Schema({
+export const transactionSchema = new Schema({
     note: {
         type: String,
         default: "Payment"

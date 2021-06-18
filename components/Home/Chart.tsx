@@ -25,7 +25,7 @@ const CustomTooltip = ({ item, data }: { item: any, data: ChartData[] }) => {
       if (isNaN(result) || result === Infinity || result === 0)
         return
 
-      setRevenuePercentage(result*100);
+      setRevenuePercentage(result * 100);
     }
 
     const getExpensePercentage = () => {
@@ -33,7 +33,7 @@ const CustomTooltip = ({ item, data }: { item: any, data: ChartData[] }) => {
 
       if (isNaN(result) || result === Infinity || result === 0)
         return null
-      setExpensePercentage(result*100);
+      setExpensePercentage(result * 100);
     }
 
     getRevenuePercentage();
@@ -86,8 +86,7 @@ export default function Chart({ width, height, data }: { width: number, height: 
   return (
     <div>
       <div className="flex justify-center">
-        <LineChart width={width} height={height} data={data}
-          >
+        <LineChart width={width} height={height} data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="key" />
           <YAxis />

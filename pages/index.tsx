@@ -40,6 +40,7 @@ export default function Home() {
     first: 0,
     last: optionsState.bounds === "all" ? -1 : +optionsState.bounds,
   });
+
   const [open, setOpen] = useState(false);
   const [cardChunk, setCardChunk] = useState(CARD_INCREMENT);
 
@@ -111,9 +112,9 @@ export default function Home() {
               />
             )}
 
-            <div className="block md:hidden overflow-hidden">
+            <div className="block md:hidden">
               <Chart
-                width={window.innerWidth}
+                width={window.innerWidth-10}
                 height={400}
                 data={getChartData(data?.get_client?.transactions)}
               // legend
