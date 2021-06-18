@@ -116,7 +116,7 @@ export default function Home() {
 
             <div className="block md:hidden">
               <Chart
-                width={window.innerWidth-10}
+                width={window.innerWidth-20}
                 height={400}
                 data={getChartData(data?.get_client?.transactions)}
               // legend
