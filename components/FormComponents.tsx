@@ -33,6 +33,8 @@ interface InputProps {
   step?: string,
   onChange?: any
   value?: string
+  required?:boolean
+  accept?:string
 }
 
 export const Input = (props: InputProps) => {
