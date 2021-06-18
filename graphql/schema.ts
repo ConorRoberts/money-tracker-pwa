@@ -10,7 +10,7 @@ const schema = gql`
         created_at:String!
         taxable:Boolean!
         type:String!
-        subcategory:String!
+        subcategory:String
     }
 
     input TransactionInput {

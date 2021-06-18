@@ -57,7 +57,7 @@ export const BottomNavigation = () => {
           </ul>
         </div>
       </PopupContainer>}
-      <div className="bg-gray-800 fixed bottom-0 w-full sm:hidden px-5">
+      <div className="bg-gray-900 fixed bottom-0 w-full sm:hidden px-5 shadow-md border border-t-1 border-gray-800">
         <ul className="flex list-none gap-8 justify-between pb-6">
           {[
             ...ROUTES,

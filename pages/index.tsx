@@ -111,9 +111,9 @@ export default function Home() {
               />
             )}
 
-            <div className="block md:hidden">
+            <div className="block md:hidden overflow-hidden">
               <Chart
-                width={350}
+                width={window.innerWidth}
                 height={400}
                 data={getChartData(data?.get_client?.transactions)}
               // legend
@@ -181,7 +181,7 @@ const getChartData = (transactions: Transaction[]): { key: string, revenue: numb
       .toFixed(2)
   }
 
-  const groupedByDate = Object.entries(_.groupBy(transactions.map((e: Transaction) => ({ ...e, created_at: getWeekStart(new Date(e.created_at.slice(0, 10))).toDateString() })), "created_at")).reverse();
+  const groupedByDate = Object.entries(_.groupBy(transactions.map((e: any) => ({ ...e, created_at: getWeekStart(new Date(e.created_at.slice(0, 10))).toDateString() })), "created_at")).reverse();
 
   const groupedByType = groupedByDate.map(([key, value]: [key: string, value: Transaction[]]): { key: string, revenue: number, expense: number } => ({
     key: key.split(" ").slice(1, 3).join(" "), revenue: getSum(value, "revenue")

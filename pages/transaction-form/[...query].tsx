@@ -15,6 +15,7 @@ import Image from "next/image";
 import capitalize from "@utils/capitalize";
 import useClientCategories from "@utils/useClientCategories";
 import dateConvert from "@utils/dateConvert";
+import Transaction from "@typedefs/transaction";
 
 const UPDATE_TRANSACTION = gql`
   mutation updateTransaction($id: String!, $transaction: TransactionInput!) {
@@ -89,6 +90,7 @@ export default function TransactionForm({ id = "", method }) {
     amount: "",
     category: "",
     subcategory: "",
+    new_subcategory: "",
     type: "",
     created_at: DATE_DEFAULT,
     taxable: false,
@@ -96,7 +98,6 @@ export default function TransactionForm({ id = "", method }) {
 
   const [subcategories] = useClientCategories();
   console.log(subcategories);
-  // const [customSubcategory, setCustomSubcategory] = useState(false);
 
   useEffect(() => {
     if (method === "edit") getTransaction({ variables: { id: id } });
@@ -117,17 +118,19 @@ export default function TransactionForm({ id = "", method }) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const transaction = {
-      ...form,
-      category: form.category.toLowerCase(),
-      amount: +form.amount,
-      type: form.category.toLowerCase() === "revenue" ? "revenue" : "expense",
-      created_at:
-        form.created_at === DATE_DEFAULT
-          ? new Date()
-          : dateConvert(form.created_at),
-    };
+    const { note, subcategory, category, amount, type, taxable, created_at, new_subcategory } = form;
 
+    const transaction: Transaction = {
+      category: category.toLowerCase(),
+      subcategory: subcategory.toLowerCase() === "custom" ? new_subcategory.toLowerCase() : subcategory.toLowerCase(),
+      amount: +amount,
+      type: type.toLowerCase(),
+      taxable,
+      note,
+      created_at: created_at === DATE_DEFAULT
+        ? new Date()
+        : dateConvert(created_at),
+    };
 
     try {
       if (method === "new") {
@@ -178,6 +181,69 @@ export default function TransactionForm({ id = "", method }) {
             </div>
           )}
           <div>
+            <Label>Transaction Type</Label>
+            <div className="flex justify-start gap-4">
+              {["revenue", "expense"].map((e, typeIndex) => <Button
+                onClick={() => setForm({ ...form, type: e })}
+                type="button"
+                key={`type-${typeIndex}`}
+                className={`${form.type === e
+                  ? "bg-green-700 text-gray-100"
+                  : "bg-white hover:bg-green-100 transition"
+                  } p-2 rounded-md shadow-md whitespace-nowrap transition flex-1 `}
+              >
+                {capitalize(e)}
+              </Button>)}
+            </div>
+          </div>
+          <div>
+            <Label>Category</Label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row">
+              {Object.keys(categories).map((e, categoryIdx) => (
+                <Button
+                  key={`category-${categoryIdx}`}
+                  onClick={() => setForm({ ...form, category: e })}
+                  type="button"
+                  className={`${form.category === e
+                    ? "bg-green-700 text-gray-100"
+                    : "bg-white hover:bg-green-100 transition"
+                    } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${e.length > 12 && "col-span-2"} row-span-1`}
+                >
+                  {capitalize(e)}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>Sub-Category</Label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row my-1">
+              {subcategories?.get_client_categories?.map((e: string, subcategoryIndex: number) => (
+                <Button
+                  key={`subcategory-${subcategoryIndex}`}
+                  onClick={() => setForm({ ...form, subcategory: e })}
+                  type="button"
+                  className={`${form.subcategory === e
+                    ? "bg-green-700 text-gray-100"
+                    : "bg-white hover:bg-green-100 transition"
+                    } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${e.length > 12 && "col-span-2"} row-span-1`}
+                >
+                  {capitalize(e)}
+                </Button>
+              ))}
+              <Button
+                onClick={() => setForm({ ...form, subcategory: "custom" })}
+                type="button"
+                className={`${form.subcategory === "custom"
+                  ? "bg-green-700 text-gray-100"
+                  : "bg-white hover:bg-green-100 transition"
+                  } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm row-span-1`}
+              >
+                Custom
+              </Button>
+            </div>
+            {form.subcategory === "custom" && <Input onChange={handleChange} placeholder="New subcategory" type="text" name="new_subcategory" />}
+          </div>
+          <div>
             <Label>Amount</Label>
             <Input
               placeholder="Amount"
@@ -189,95 +255,43 @@ export default function TransactionForm({ id = "", method }) {
             />
           </div>
           <div>
-            <Label>Category</Label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 grid-flow-row">
-              {Object.keys(categories).map((e, categoryIdx) => (
-                <Button
-                  key={`category-${categoryIdx}`}
-                  onClick={() => setForm({ ...form, category: e })}
-                  type="button"
-                  className={`${form.category === e
-                    ? "bg-green-700 text-gray-100"
-                    : "bg-white hover:bg-green-100 transition"
-                    } p-3 rounded-md shadow-md whitespace-nowrap transition font-medium ${e.length > 12 && "col-span-2"} row-span-1`}
-                >
-              {capitalize(e)}
-                </Button>
-              ))}
+            <Label>Note</Label>
+            <Input
+              placeholder="Note"
+              type="text"
+              name="note"
+              onChange={handleChange}
+              value={form.note}
+            />
           </div>
+          <div>
+            <Label>Date</Label>
+            <Input
+              type="date"
+              name="created_at"
+              onChange={handleChange}
+              value={form.created_at}
+            />
           </div>
-        <div>
-          <Label>Sub-Category</Label>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 grid-flow-row">
-            {subcategories?.get_client_categories?.map((e, categoryIdx) => (
-              <p>{e}</p>
-            ))}
+          <div className="flex flex-col items-center">
+            <Label>Taxable?</Label>
+            <Checkbox
+              className="w-7 h-7"
+              name="taxable"
+              value={form.taxable}
+              onClick={() => setForm({ ...form, taxable: !form.taxable })}
+            />
           </div>
-        </div>
-        {/* {form.subcategory === "custom" && (
-            <div>
-              <Label>New Subcategory</Label>
-              <Input
-                type="text"
-                onChange={handleChange}
-                value={form.subcategory}
-              />
-            </div>
-          )} */}
-        {/* <div className="flex gap-3 flex-wrap">
-              {Object.keys(categories).map((e, categoryIdx) => (
-                <Button
-                key={`category-${categoryIdx}`}
-                onClick={() => setForm({ ...form, category: e })}
-                  type="button"
-                  className={`${
-                    form.category === e
-                      ? "bg-green-700 text-gray-100"
-                      : "bg-white hover:bg-green-100 transition"
-                  } p-3 rounded-md shadow-md whitespace-nowrap flex-1 transition font-medium`}
-                >
-                  {capitalize(e)}
-                </Button>
-              ))}
-            </div> */}
-        <div>
-          <Label>Note</Label>
-          <Input
-            placeholder="Note"
-            type="text"
-            name="note"
-            onChange={handleChange}
-            value={form.note}
-          />
-        </div>
-        <div>
-          <Label>Date</Label>
-          <Input
-            type="date"
-            name="created_at"
-            onChange={handleChange}
-            value={form.created_at}
-          />
-        </div>
-        <div className="flex flex-col items-center">
-          <Label>Taxable?</Label>
-          <Checkbox
-            className="w-7 h-7"
-            name="taxable"
-            value={form.taxable}
-            onClick={() => setForm({ ...form, taxable: !form.taxable })}
-          />
-        </div>
-        <div className="flex justify-center">
-          <Button
-            type="submit"
-            className="rounded-md bg-green-700 transition text-gray-100 px-5 py-2 hover:bg-green-900"
-          >
-            Submit
-          </Button>
-        </div>
+          <div className="flex justify-center">
+            <Button
+              type="submit"
+              className="rounded-md bg-green-700 transition text-gray-100 px-5 py-2 hover:bg-green-900"
+            >
+              Submit
+            </Button>
+          </div>
         </form>
-    </div>
+      </div>
     </div >
   );
 }
