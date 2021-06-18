@@ -27,18 +27,18 @@ const resolvers = {
 
                 return arr.slice(first, last);
             }
-            
+
             try {
-                const client = await Client.findOne({ auth: id }).populate("auth").populate("transactions");
+                const client = await Client.findOne({ auth: id }).populate("transactions");
                 return {
                     ...client._doc,
                     id: client.id,
                     transactions: sliceTransactions(client._doc.transactions.map((e: any) => formatTransaction(e)).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())),
-                    auth: {
-                        ...client._doc.auth._doc,
-                        created_at: new Date(client._doc.auth.createdAt).toISOString(),
-                        updated_at: new Date(client._doc.auth.updatedAt).toISOString()
-                    }
+                    // auth: {
+                    //     ...client._doc.auth._doc,
+                    //     created_at: new Date(client._doc.auth.createdAt).toISOString(),
+                    //     updated_at: new Date(client._doc.auth.updatedAt).toISOString()
+                    // }
                 }
             } catch (e) {
                 console.error(e);
