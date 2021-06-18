@@ -12,6 +12,7 @@ const GET_USER_DATA = gql`
         created_at
         taxable
         type
+        subcategory
       }
     }
   }

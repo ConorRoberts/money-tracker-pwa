@@ -19,17 +19,17 @@ const formatTransaction = (transactionDocument: any) => {
 const resolvers = {
     Query: {
         get_client: async (_parent: any, { id, first, last }: any) => {
-            const sliceTransactions = (arr: string | any[]) => {
+
+            const sliceTransactions = (arr: any[]) => {
                 if (last === -1) {
                     return arr;
                 }
 
                 return arr.slice(first, last);
             }
-
+            
             try {
                 const client = await Client.findOne({ auth: id }).populate("auth").populate("transactions");
-
                 return {
                     ...client._doc,
                     id: client.id,
@@ -41,6 +41,7 @@ const resolvers = {
                     }
                 }
             } catch (e) {
+                console.error(e);
                 return null;
             }
         },

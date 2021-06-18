@@ -47,7 +47,7 @@ export default function MyApp({ Component, pageProps }) {
       </Head>
       <ApolloProvider client={client}>
         <Provider session={pageProps.session}>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-col min-h-screen ">
             <TopNavigation />
             <Component {...pageProps} />
             <BottomNavigation />

@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const clientSchema = new Schema({
+export const clientSchema = new Schema({
     auth: {
         type: Schema.Types.ObjectId,
         ref: "User"

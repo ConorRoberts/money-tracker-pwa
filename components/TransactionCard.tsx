@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@components/FormComponents";
 import categories from "@utils/categories";
-import type TransactionCardProps from "../types/transaction-card";
+import type TransactionCardProps from "@typedefs/transaction-card";
 
 export default function TransactionCard({
   id,

@@ -37,7 +37,7 @@ const schema = gql`
     }
 
     type Query {
-        get_client(id:String!,first:Int,last:Int):Client!
+        get_client(id:String!,first:Int,last:Int):Client
         get_transaction(id:String!):Transaction!
         get_client_categories(id:String!):[String!]
     }
