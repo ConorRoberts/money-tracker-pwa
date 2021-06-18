@@ -52,11 +52,11 @@ export default function Home() {
       clearInterval(interval);
     };
   }, [refetch]);
+  console.log(data);
 
   if (!loading && !session) router.push("/login");
   if (loading || !data || !data?.get_client || !session) return <Loading />;
 
-  console.log(data);
 
   const revenue_total = data?.get_client?.transactions
     .filter((e: any) => e?.type?.toLowerCase() === "revenue")
