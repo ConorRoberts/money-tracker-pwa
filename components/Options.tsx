@@ -11,8 +11,6 @@ export default function Options({ setOpen, setState, state }) {
     setState({ ...state, [name]: value });
   };
 
-  console.log(state);
-
   return (
     <PopupContainer setOpen={setOpen} passRef={ref}>
       <div className="flex justify-center p-2" ref={ref}>

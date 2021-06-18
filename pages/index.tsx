@@ -44,19 +44,16 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [cardChunk, setCardChunk] = useState(CARD_INCREMENT);
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     refetch();
-  //   }, REFRESH_DELAY);
-  //   return () => {
-  //     clearInterval(interval);
-  //   };
-  // }, [refetch]);
-
-  // const data = null;
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, REFRESH_DELAY);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [refetch]);
 
   if (!loading && !session) router.push("/login");
-  console.log(data);
   if (loading || !data || !session) return <Loading />;
 
   const revenue_total = data?.get_client?.transactions
@@ -117,7 +114,7 @@ export default function Home() {
 
             <div className="block md:hidden">
               <Chart
-                width={window.innerWidth}
+                width={window.innerWidth-10}
                 height={400}
                 data={getChartData(data?.get_client?.transactions)}
               // legend
