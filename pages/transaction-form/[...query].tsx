@@ -13,6 +13,9 @@ import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import categories from "@utils/categories";
 import Image from "next/image";
 import capitalize from "@utils/capitalize";
+import useClientCategories from "@utils/useClientCategories";
+import dateConvert from "@utils/dateConvert";
+import Transaction from "@typedefs/transaction";
 
 const UPDATE_TRANSACTION = gql`
   mutation updateTransaction($id: String!, $transaction: TransactionInput!) {
@@ -50,16 +53,28 @@ const GET_TRANSACTION = gql`
       created_at
       taxable
       type
+      subcategory
     }
   }
 `;
 
 const DATE_DEFAULT = new Date().toISOString().slice(0, 10);
 
+const getColumnSpan = (n: number, max: number, cols: number) => {
+  const x = Math.floor(n / max) % cols
+  if (x == 1) {
+    return "col-span-1";
+  } else if (x == 2) {
+    return "col-span-2";
+  } else if (x == 3) {
+    return "col-span-3";
+  }
+};
+
 export default function TransactionForm({ id = "", method }) {
   const [session, loading] = useSession();
   const router = useRouter();
-  const [getTransaction, { data }] = useLazyQuery(GET_TRANSACTION);
+  const [getTransaction, { data, loading: transactionLoading }] = useLazyQuery(GET_TRANSACTION);
   const [updateTransaction] = useMutation(UPDATE_TRANSACTION, {
     onCompleted: () => router.push("/"),
   });
@@ -74,39 +89,47 @@ export default function TransactionForm({ id = "", method }) {
     note: "",
     amount: "",
     category: "",
+    subcategory: "",
+    new_subcategory: "",
     type: "",
     created_at: DATE_DEFAULT,
     taxable: false,
   });
+
+  const [subcategories] = useClientCategories();
+  console.log(subcategories);
 
   useEffect(() => {
     if (method === "edit") getTransaction({ variables: { id: id } });
   }, []);
 
   useEffect(() => {
-    if (data) {
+    if (!transactionLoading && data) {
+
+      const filteredData: any = Object.fromEntries(Object.entries(data?.get_transaction).filter(([key]) => Object.keys(form).includes(key)));
+
       setForm({
-        ...data?.get_transaction,
+        ...filteredData,
         created_at: data?.get_transaction.created_at.slice(0, 10),
       });
     }
   }, [data]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const date = form.created_at.split("-");
+    const { note, subcategory, category, amount, type, taxable, created_at, new_subcategory } = form;
 
-    const transaction = {
-      category: form.category.toLowerCase(),
-      note: form.note,
-      taxable: form.taxable,
-      amount: +form.amount,
-      type: form.category.toLowerCase() === "revenue" ? "revenue" : "expense",
-      created_at:
-        form.created_at === DATE_DEFAULT
-          ? new Date()
-          : new Date(date[0], date[1] - 1, date[2]),
+    const transaction: Transaction = {
+      category: category.toLowerCase(),
+      subcategory: subcategory.toLowerCase() === "custom" ? new_subcategory.toLowerCase() : subcategory.toLowerCase(),
+      amount: +amount,
+      type: type.toLowerCase(),
+      taxable,
+      note,
+      created_at: created_at === DATE_DEFAULT
+        ? new Date()
+        : dateConvert(created_at),
     };
 
     try {
@@ -130,7 +153,7 @@ export default function TransactionForm({ id = "", method }) {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: any) => {
     const { name, value } = e.target;
     setForm({
       ...form,
@@ -142,9 +165,10 @@ export default function TransactionForm({ id = "", method }) {
   if (method === "edit" && !data) return <Loading />;
 
   if (!loading && !session) router.push("/");
+
   return (
-    <div className="bg-gray-900 flex-1 p-2">
-      <div className="w-full md:w-1/2 mx-auto md:rounded-lg md:shadow-md bg-gray-800 mt-2 sm:mt-16 rounded-md shadow-md">
+    <div className="bg-gray-900 flex-1 p-2 pb-24">
+      <div className="w-full md:w-3/4 xl:w-1/3 mx-auto md:rounded-lg md:shadow-md bg-gray-800 mt-2 sm:mt-16 rounded-md shadow-md">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
           {method === "edit" && (
             <div className="flex justify-end">
@@ -157,6 +181,69 @@ export default function TransactionForm({ id = "", method }) {
             </div>
           )}
           <div>
+            <Label>Transaction Type</Label>
+            <div className="flex justify-start gap-4">
+              {["revenue", "expense"].map((e, typeIndex) => <Button
+                onClick={() => setForm({ ...form, type: e })}
+                type="button"
+                key={`type-${typeIndex}`}
+                className={`${form.type === e
+                  ? "bg-green-700 text-gray-100"
+                  : "bg-white hover:bg-green-100 transition"
+                  } p-2 rounded-md shadow-md whitespace-nowrap transition flex-1 `}
+              >
+                {capitalize(e)}
+              </Button>)}
+            </div>
+          </div>
+          <div>
+            <Label>Category</Label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row">
+              {Object.keys(categories).map((e, categoryIdx) => (
+                <Button
+                  key={`category-${categoryIdx}`}
+                  onClick={() => setForm({ ...form, category: e })}
+                  type="button"
+                  className={`${form.category === e
+                    ? "bg-green-700 text-gray-100"
+                    : "bg-white hover:bg-green-100 transition"
+                    } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${e.length > 12 && "col-span-2"} row-span-1`}
+                >
+                  {capitalize(e)}
+                </Button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <Label>Sub-Category</Label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row my-1">
+              {subcategories?.get_client_categories?.map((e: string, subcategoryIndex: number) => (
+                <Button
+                  key={`subcategory-${subcategoryIndex}`}
+                  onClick={() => setForm({ ...form, subcategory: e })}
+                  type="button"
+                  className={`${form.subcategory === e
+                    ? "bg-green-700 text-gray-100"
+                    : "bg-white hover:bg-green-100 transition"
+                    } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${e.length > 12 && "col-span-2"} row-span-1`}
+                >
+                  {capitalize(e)}
+                </Button>
+              ))}
+              <Button
+                onClick={() => setForm({ ...form, subcategory: "custom" })}
+                type="button"
+                className={`${form.subcategory === "custom"
+                  ? "bg-green-700 text-gray-100"
+                  : "bg-white hover:bg-green-100 transition"
+                  } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm row-span-1`}
+              >
+                Custom
+              </Button>
+            </div>
+            {form.subcategory === "custom" && <Input onChange={handleChange} placeholder="New subcategory" type="text" name="new_subcategory" />}
+          </div>
+          <div>
             <Label>Amount</Label>
             <Input
               placeholder="Amount"
@@ -166,40 +253,6 @@ export default function TransactionForm({ id = "", method }) {
               onChange={handleChange}
               value={form.amount}
             />
-          </div>
-          {/* <Select
-          name="category"
-          value={capitalize(form.category)}
-          onChange={handleChange}
-        >
-          <option value="" disabled>
-            Choose a category
-          </option>
-
-          {Object.keys(categories).map((e, index) => (
-            <option key={`${e}-${index}`} value={e}>
-              {capitalize(e)}
-            </option>
-          ))}
-        </Select> */}
-          <div>
-            <Label>Category</Label>
-            <div className="flex gap-3 flex-wrap">
-              {Object.keys(categories).map((e, categoryIdx) => (
-                <Button
-                  key={`category-${categoryIdx}`}
-                  onClick={() => setForm({ ...form, category: e })}
-                  type="button"
-                  className={`${
-                    form.category === e
-                      ? "bg-green-700 text-gray-100"
-                      : "bg-white hover:bg-green-100 transition"
-                  } p-3 rounded-md shadow-md whitespace-nowrap flex-1 transition font-medium`}
-                >
-                  {capitalize(e)}
-                </Button>
-              ))}
-            </div>
           </div>
           <div>
             <Label>Note</Label>
@@ -239,7 +292,7 @@ export default function TransactionForm({ id = "", method }) {
           </div>
         </form>
       </div>
-    </div>
+    </div >
   );
 }
 

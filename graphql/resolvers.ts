@@ -7,7 +7,7 @@ import User from "@models/User";
  * @param {*} transactionDocument 
  * @returns 
  */
-const formatTransaction = (transactionDocument) => {
+const formatTransaction = (transactionDocument: any) => {
     const transaction = transactionDocument._doc;
     return {
         ...transaction,
@@ -18,8 +18,8 @@ const formatTransaction = (transactionDocument) => {
 
 const resolvers = {
     Query: {
-        get_client: async (_, { id, first, last }) => {
-            const sliceTransactions = (arr) => {
+        get_client: async (_parent: any, { id, first, last }: any) => {
+            const sliceTransactions = (arr: string | any[]) => {
                 if (last === -1) {
                     return arr;
                 }
@@ -33,7 +33,7 @@ const resolvers = {
                 return {
                     ...client._doc,
                     id: client.id,
-                    transactions: sliceTransactions(client._doc.transactions.map(e => formatTransaction(e)).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))),
+                    transactions: sliceTransactions(client._doc.transactions.map((e: any) => formatTransaction(e)).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())),
                     auth: {
                         ...client._doc.auth._doc,
                         created_at: new Date(client._doc.auth.createdAt).toISOString(),
@@ -44,7 +44,7 @@ const resolvers = {
                 return null;
             }
         },
-        get_transaction: async (_, { id }) => {
+        get_transaction: async (_parent: any, { id }: any) => {
             try {
                 const transaction = await Transaction.findOne({ _id: id });
 
@@ -52,10 +52,22 @@ const resolvers = {
             } catch (e) {
                 return null;
             }
+        },
+        get_client_categories: async (_parent: any, { id }: any) => {
+            try {
+                const client = await Client.findOne({ auth: id }).populate("transactions");
+
+                let subcategories = [];
+                client.transactions.map((e: any) => e.subcategory).forEach((e: string) => !subcategories.includes(e) && subcategories.push(e));
+
+                return subcategories;
+            } catch (e) {
+                return null;
+            }
         }
     },
     Mutation: {
-        create_transaction: async (_, { client_id, transaction }) => {
+        create_transaction: async (_parent: any, { client_id, transaction }) => {
             try {
                 const client = await Client.findOne({ auth: client_id });
 
@@ -72,7 +84,7 @@ const resolvers = {
 
             return null;
         },
-        update_transaction: async (_, { id, transaction }) => {
+        update_transaction: async (_parent: any, { id, transaction }: any) => {
             try {
                 const updatedTransaction = await Transaction.findOneAndUpdate({ _id: id }, { ...transaction });
                 await updatedTransaction.save();
@@ -84,7 +96,7 @@ const resolvers = {
 
             return null;
         },
-        delete_transaction: async (_, { id }) => {
+        delete_transaction: async (_parent: any, { id }: any) => {
             try {
                 const deletedTransaction = await Transaction.findOneAndDelete({ _id: id });
 
