@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@components/FormComponents";
 import categories from "@utils/categories";
-import type TransactionCardProps from "@typedefs/transaction-card";
+import type Transaction from "@typedefs/transaction";
 
 export default function TransactionCard({
   id,
@@ -12,7 +12,7 @@ export default function TransactionCard({
   created_at,
   category,
   type,
-}: TransactionCardProps) {
+}: Transaction) {
   return (
     <div className="bg-gray-700 rounded-lg p-2 flex items-center gap-5 shadow-md sm:flex-none w-96 relative">
       <div className="rounded-full bg-gray-300 p-5 flex justify-center items-center">

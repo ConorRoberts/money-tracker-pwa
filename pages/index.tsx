@@ -14,9 +14,9 @@ import capitalize from "@utils/capitalize";
 import CompactTransactionCard from "@components/CompactTransactionCard";
 import type Transaction from "@typedefs/transaction";
 import getWeekStart from "@utils/getWeekStart";
+import { BsFillGearFill } from "react-icons/bs";
 
 const CARD_INCREMENT = 15;
-const REFRESH_DELAY = 2500;
 
 export default function Home() {
   const [session, loading] = useSession();
@@ -31,12 +31,12 @@ export default function Home() {
     compact: false,
     search: "",
     field: "",
-    bounds: "25",
+    bounds: "-1",
     month: "",
     day: "",
     year: "",
   });
-  const [data, refetch] = useClient({
+  const { data, refetch } = useClient({
     first: 0,
     last: optionsState.bounds === "all" ? -1 : +optionsState.bounds,
   });
@@ -44,19 +44,8 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [cardChunk, setCardChunk] = useState(CARD_INCREMENT);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetch();
-    }, REFRESH_DELAY);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [refetch]);
-  console.log(data);
-
   if (!loading && !session) router.push("/login");
   if (loading || !data || !data?.get_client || !session) return <Loading />;
-
 
   const revenue_total = data?.get_client?.transactions
     .filter((e: any) => e?.type?.toLowerCase() === "revenue")
@@ -77,8 +66,8 @@ export default function Home() {
       }
       {
         data.get_client.transactions.length > 0 && (
-          <>
-            <div className="flex flex-col items-center gap-3">
+          <div className="mt-10">
+            {/* <div className="flex flex-col items-center gap-3">
               <p className="text-4xl text-white font-sans">
                 ${(revenue_total - expense_total).toLocaleString()}
               </p>
@@ -96,15 +85,10 @@ export default function Home() {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
             <div className="absolute top-2 right-2 cursor-pointer">
-              <Image
-                onClick={() => setOpen(!open)}
-                src="/Icon_Settings.svg"
-                priority
-                height={25}
-                width={25}
-              />
+              <BsFillGearFill onClick={() => setOpen(!open)} className="text-white w-5 h-5 hover:text-green-500 transition" />
+
             </div>
             {open && (
               <Options
@@ -116,7 +100,7 @@ export default function Home() {
 
             <div className="block md:hidden">
               <Chart
-                width={window.innerWidth-20}
+                width={window.innerWidth - 20}
                 height={400}
                 data={getChartData(data?.get_client?.transactions)}
               // legend
@@ -132,7 +116,7 @@ export default function Home() {
               // }
               />
             </div>
-          </>
+          </div>
         )
       }
 

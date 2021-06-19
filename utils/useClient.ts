@@ -4,6 +4,7 @@ import { useSession } from "next-auth/client";
 const GET_USER_DATA = gql`
   query getUserData($id: String!,$first:Int,$last:Int) {
     get_client(id: $id,first:$first,last:$last) {
+      id
       transactions {
         id
         note
@@ -19,11 +20,10 @@ const GET_USER_DATA = gql`
 `;
 
 export default function useClient({ first, last }) {
-  const [session, _] = useSession();
+  const [session, _loading] = useSession();
 
-  const { data, refetch } = useQuery(GET_USER_DATA, {
+  return useQuery(GET_USER_DATA, {
     variables: { id: session?.user.id, first, last },
+    pollInterval: 2500,
   });
-
-  return [data, refetch];
 };

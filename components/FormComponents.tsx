@@ -33,8 +33,8 @@ interface InputProps {
   step?: string,
   onChange?: any
   value?: string
-  required?:boolean
-  accept?:string
+  required?: boolean
+  accept?: string
 }
 
 export const Input = (props: InputProps) => {
@@ -60,22 +60,24 @@ export const TextArea = (props: TextAreaProps) => {
 };
 
 interface SelectProps {
-  className: string,
-  onBlur: any,
-  onClick: any,
+  className?: string
+  onBlur?: any
+  onClick?: any
   children: any
+  onChange?: any
+  value?: any
 }
 
 export const Select = (props: SelectProps) => {
   const [open, setOpen] = useState(false);
 
-  const onBlur = (e) => {
+  const onBlur = (e: any) => {
     if (props.onBlur) props?.onBlur(e);
     if (open) {
       setOpen(!open);
     }
   };
-  const onClick = (e) => {
+  const onClick = (e: any) => {
     if (props.onClick) props?.onClick(e);
     setOpen(!open);
   };
@@ -83,7 +85,7 @@ export const Select = (props: SelectProps) => {
   return (
     <div className={`relative w-full flex items-center`}>
       <select
-        className={`py-1 px-2 w-full rounded-md appearance-none focus:ring-1 focus:outline-none border border-gray-300 bg-white`}
+        className={`py-1 pl-2 pr-6 w-full rounded-md appearance-none focus:ring-1 focus:outline-none border border-gray-300 bg-white`}
         {...props}
         onBlur={onBlur}
         onClick={onClick}

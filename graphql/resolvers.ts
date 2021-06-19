@@ -16,6 +16,8 @@ const formatTransaction = (transactionDocument: any) => {
     };
 }
 
+const sortTransactions = (array: any) => array.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
 const resolvers = {
     Query: {
         get_client: async (_parent: any, { id, first, last }: any) => {
@@ -30,10 +32,11 @@ const resolvers = {
 
             try {
                 const client = await Client.findOne({ auth: id }).populate("transactions");
+
                 return {
                     ...client._doc,
                     id: client.id,
-                    transactions: sliceTransactions(client._doc.transactions.map((e: any) => formatTransaction(e)).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())),
+                    transactions: sortTransactions(sliceTransactions(client._doc.transactions.map((e: any) => formatTransaction(e)))),
                     // auth: {
                     //     ...client._doc.auth._doc,
                     //     created_at: new Date(client._doc.auth.createdAt).toISOString(),
@@ -65,6 +68,49 @@ const resolvers = {
             } catch (e) {
                 return null;
             }
+        },
+        get_transactions_between: async (_parent: any, { id, start, end }) => {
+            let client = null;
+            try {
+                client = await Client.findOne({ auth: id });
+            } catch (e) {
+                return null;
+            }
+
+            if (!client) return null;
+
+            try {
+
+                let transactions: any;
+                if (start && end) {
+                    transactions = await Transaction.find({
+                        created_at: {
+                            $gt: Date.parse(start),
+                            $lt: Date.parse(end),
+                        },
+                        author: client.id
+                    });
+                } else if (start) {
+                    transactions = await Transaction.find({
+                        created_at: {
+                            $gt: Date.parse(start),
+                        },
+                        author: client.id
+                    });
+                } else if (end) {
+                    transactions = await Transaction.find({
+                        created_at: {
+                            $lt: Date.parse(end),
+                        },
+                        author: client.id
+                    });
+                }
+
+                return transactions?.length ? sortTransactions(transactions.map((e: any) => formatTransaction(e))) : [];
+            } catch (e) {
+                console.error(e);
+                return null;
+            }
         }
     },
     Mutation: {
@@ -72,7 +118,7 @@ const resolvers = {
             try {
                 const client = await Client.findOne({ auth: client_id });
 
-                const newTransaction = new Transaction({ ...transaction });
+                const newTransaction = new Transaction({ ...transaction, author: client.id });
                 await newTransaction.save();
 
                 client.transactions.push(newTransaction.id)

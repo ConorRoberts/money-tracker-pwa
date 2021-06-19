@@ -1,4 +1,6 @@
-import { HiHome as Home } from "react-icons/hi";
+import { AiOutlinePlus as PlusIcon,AiOutlineSearch as SearchIcon } from "react-icons/ai";
+import { IoMdHome as HomeIcon } from "react-icons/io";
+import { BsThreeDots as MiscIcon, BsFillPersonFill as PersonIcon } from "react-icons/bs";
 
 interface Route {
     path: string,
@@ -6,29 +8,34 @@ interface Route {
     Icon: any
 }
 
-export const ROUTES: [Route] = [
+export const ROUTES: Route[] = [
     {
         path: "/",
         text: "Home",
-        Icon: <Home/>,
+        Icon: HomeIcon,
     },
 ];
-export const LOGGED_IN_LINKS = [
+export const LOGGED_IN_LINKS: Route[] = [
     {
         path: "/transaction-form/new",
         text: "New",
-        Icon: <Home/>,
+        Icon: PlusIcon,
     },
-    // {
-    //     path: "/misc",
-    //     text: "Misc",
-    //     Icon: "/Person.svg",
-    // },
+    {
+        path: "/search",
+        text: "Search",
+        Icon: SearchIcon,
+    },
+    {
+        path: "/misc",
+        text: "Misc",
+        Icon: MiscIcon,
+    },
 ];
-export const LOGGED_OUT_LINKS = [
+export const LOGGED_OUT_LINKS: Route[] = [
     {
         path: "/login",
         text: "Login",
-        Icon: <Home/>,
+        Icon: PersonIcon,
     },
 ];
