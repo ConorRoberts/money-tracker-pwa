@@ -33,6 +33,11 @@ const resolvers = {
             try {
                 const client = await Client.findOne({ auth: id }).populate("transactions");
 
+                // for (const i of client.transactions) {
+                //     // console.log(client.id);
+                //     await Transaction.findOneAndUpdate({ _id: i._id }, { author: client.id });
+                // }
+
                 return {
                     ...client._doc,
                     id: client.id,
@@ -85,22 +90,22 @@ const resolvers = {
                 if (start && end) {
                     transactions = await Transaction.find({
                         created_at: {
-                            $gt: Date.parse(start),
-                            $lt: Date.parse(end),
+                            $gte: Date.parse(start),
+                            $lte: Date.parse(end),
                         },
                         author: client.id
                     });
                 } else if (start) {
                     transactions = await Transaction.find({
                         created_at: {
-                            $gt: Date.parse(start),
+                            $gte: Date.parse(start),
                         },
                         author: client.id
                     });
                 } else if (end) {
                     transactions = await Transaction.find({
                         created_at: {
-                            $lt: Date.parse(end),
+                            $lte: Date.parse(end),
                         },
                         author: client.id
                     });

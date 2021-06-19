@@ -24,12 +24,14 @@ const GET_TRANSACTIONS = gql`
     }
 `;
 
+const DEFAULT_DATE = new Date();
+
 export default function Search() {
 
     const [session, loading] = useSession();
 
-    const [start, setStart] = useState(null);
-    const [end, setEnd] = useState(null);
+    const [start, setStart] = useState(DEFAULT_DATE);
+    const [end, setEnd] = useState(DEFAULT_DATE);
     const [mode, setMode] = useState("between")
     const [filterText, setFilterText] = useState("")
     const [filterProperty, setFilterProperty] = useState("")
@@ -37,15 +39,7 @@ export default function Search() {
     const [sliceEnd, setSliceEnd] = useState(25);
     const [transactions, setTransactions] = useState([]);
 
-    const { data } = useQuery(GET_TRANSACTIONS, { variables: { id: session?.user?.id, start: start?.toISOString(), end: end?.toISOString() } })
-
-    useEffect(() => {
-        if (mode === "before") {
-            setStart(null);
-        } else if (mode === "after") {
-            setEnd(null);
-        }
-    }, [mode]);
+    const { data } = useQuery(GET_TRANSACTIONS, { variables: { id: session?.user?.id, start: mode === "before" ? null : start?.toISOString(), end: mode === "after" ? null : end?.toISOString() } })
 
     useEffect(() => {
         let t = [];
@@ -75,11 +69,11 @@ export default function Search() {
 
                 {mode !== "before" && <div>
                     <Label>Start Date</Label>
-                    <Input type="date" onChange={(e: any) => setStart(dateConvert(e.target.value))} />
+                    <Input type="date" onChange={(e: any) => setStart(dateConvert(e.target.value))} value={start?.toISOString().slice(0, 10)} />
                 </div>}
                 {mode !== "after" && <div>
                     <Label>End Date</Label>
-                    <Input type="date" onChange={(e: any) => setEnd(dateConvert(e.target.value))} />
+                    <Input type="date" onChange={(e: any) => setEnd(dateConvert(e.target.value))} value={end?.toISOString().slice(0, 10)} />
                 </div>}
 
                 <Label className="mt-3">Filter</Label>
