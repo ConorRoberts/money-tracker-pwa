@@ -58,7 +58,7 @@ export default function Search() {
     if (!session || loading) return <Loading />
 
     return (
-        <div className="flex-1 bg-gray-900 p-2">
+        <div className="flex-1 bg-gray-900 px-2 pt-4 pb-20">
             <h1 className="text-gray-100 text-4xl font-semibold my-3 text-center">Search</h1>
             <div className="mx-auto w-full max-w-screen-sm">
                 <Select onChange={(e: any) => setMode(e.target.value)}>
@@ -80,7 +80,7 @@ export default function Search() {
                 <div className="flex flex-col md:flex-row gap-2 bg-gray-800 p-2 rounded-md">
                     <div className="flex-1">
                         <Label>Query</Label>
-                        <Input type="text" onChange={e => setFilterText(e.target.value)} value={filterText} />
+                        <Input type="text" onChange={(e: any) => setFilterText(e.target.value)} value={filterText} />
                     </div>
                     <div>
                         <Label>Property</Label>
