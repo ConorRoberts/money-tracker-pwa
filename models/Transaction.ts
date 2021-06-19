@@ -29,6 +29,10 @@ export const transactionSchema = new Schema({
     taxable: {
         type: Boolean,
         default: false
+    },
+    author: {
+        type: Schema.Types.ObjectId,
+        ref: "Client"
     }
 })
 

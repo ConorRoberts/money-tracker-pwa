@@ -11,6 +11,7 @@ const schema = gql`
         taxable:Boolean!
         type:String!
         subcategory:String
+        author:Client
     }
 
     input TransactionInput {
@@ -37,15 +38,16 @@ const schema = gql`
     }
 
     type Query {
-        get_client(id:String!,first:Int,last:Int):Client
-        get_transaction(id:String!):Transaction!
-        get_client_categories(id:String!):[String!]
+        get_client(id:String,first:Int,last:Int):Client
+        get_transaction(id:String):Transaction!
+        get_client_categories(id:String):[String!]
+        get_transactions_between(id:String,start:String,end:String):[Transaction!]
     }
 
     type Mutation {
-        create_transaction(client_id:String!,transaction:TransactionInput!):Transaction
-        update_transaction(id:String!,transaction:TransactionInput!): Transaction
-        delete_transaction(id:String!): Transaction
+        create_transaction(client_id:String,transaction:TransactionInput!):Transaction
+        update_transaction(id:String,transaction:TransactionInput!): Transaction
+        delete_transaction(id:String): Transaction
     }
 `;
 
