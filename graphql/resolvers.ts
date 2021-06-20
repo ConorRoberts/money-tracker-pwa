@@ -66,10 +66,11 @@ const resolvers = {
             try {
                 const client = await Client.findOne({ auth: id }).populate("transactions");
 
+
                 let subcategories = [];
                 client.transactions.map((e: any) => e.subcategory).forEach((e: string) => !subcategories.includes(e) && subcategories.push(e));
 
-                return subcategories;
+                return subcategories.filter((e: any) => e);
             } catch (e) {
                 return null;
             }

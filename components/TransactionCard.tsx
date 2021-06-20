@@ -12,6 +12,7 @@ export default function TransactionCard({
   created_at,
   category,
   type,
+  subcategory
 }: Transaction) {
   return (
     <div className="bg-gray-700 rounded-lg p-2 flex items-center gap-5 shadow-md sm:flex-none w-96 relative">
@@ -27,7 +28,7 @@ export default function TransactionCard({
           className={`text-${type === "revenue" ? "green" : "red"
             }-500 font-normal text-2xl`}
         >{`$${amount.toFixed(2)}`}</h3>
-        {note && <p className="text-white text-md">{note}</p>}
+        {(note || subcategory) && <p className="text-white text-sm capitalize">{subcategory ?? note}</p>}
         <p className="text-white text-sm">
           {new Date(created_at).toDateString()}
         </p>
