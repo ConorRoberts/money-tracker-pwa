@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Input,
   Select,
@@ -84,41 +84,34 @@ export default function TransactionForm({ id = "", method }) {
   const [deleteTransaction] = useMutation(DELETE_TRANSACTION, {
     onCompleted: () => router.push("/"),
   });
-
+  const [errors, setErrors] = useState(null);
   const [form, setForm] = useState({
     note: "",
     amount: "",
     category: "",
-    subcategory: "",
+    subcategory: "custom",
     new_subcategory: "",
     type: "",
     created_at: DATE_DEFAULT,
     taxable: false,
   });
-
-  const [subcategories] = useClientCategories();
-  console.log(subcategories);
-
-  useEffect(() => {
-    if (method === "edit") getTransaction({ variables: { id: id } });
-  }, []);
-
-  useEffect(() => {
-    if (!transactionLoading && data) {
-
-      const filteredData: any = Object.fromEntries(Object.entries(data?.get_transaction).filter(([key]) => Object.keys(form).includes(key)));
-
-      setForm({
-        ...filteredData,
-        created_at: data?.get_transaction.created_at.slice(0, 10),
-      });
-    }
-  }, [data]);
+  const errorRef: any = useRef();
+  const { data: subcategories } = useClientCategories();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     const { note, subcategory, category, amount, type, taxable, created_at, new_subcategory } = form;
+
+    if (type === "") {
+      return setErrors("Error - Type missing.");
+    } else if (category === "") {
+      return setErrors("Error - Category missing.");
+    } else if (subcategory === "custom" && new_subcategory === "") {
+      return setErrors("Error - Description missing.");
+    } else if (amount === "") {
+      return setErrors("Error - Amount missing.");
+    }
 
     const transaction: Transaction = {
       category: category.toLowerCase(),
@@ -161,6 +154,24 @@ export default function TransactionForm({ id = "", method }) {
     });
   };
 
+  useEffect(() => {
+    if (method === "edit") getTransaction({ variables: { id: id } });
+  }, []);
+
+  useEffect(() => {
+    if (transactionLoading === false && data) {
+
+      const filteredData: any = Object.fromEntries(Object.entries(data?.get_transaction).filter(([key]) => Object.keys(form).includes(key)));
+
+      setForm({
+        ...filteredData,
+        created_at: data?.get_transaction.created_at.slice(0, 10),
+      });
+    }
+  }, [data]);
+
+  useEffect(() => { errorRef?.current?.scrollIntoView({ behavior: "smooth" }) }, [errors]);
+
   if (loading) return <Loading />;
   if (method === "edit" && !data) return <Loading />;
 
@@ -168,8 +179,11 @@ export default function TransactionForm({ id = "", method }) {
 
   return (
     <div className="bg-gray-900 flex-1 p-2 pb-24">
-      <div className="w-full md:w-3/4 xl:w-1/3 mx-auto md:rounded-lg md:shadow-md bg-gray-800 mt-2 sm:mt-16 rounded-md shadow-md">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5">
+      <div className="w-full md:w-3/4 xl:w-1/3 mx-auto mt-2 sm:mt-16">
+        {errors && <div ref={errorRef} className="bg-red-300 rounded-md text-center py-2 mb-3 font-semibold">
+          {errors}
+        </div>}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5 bg-gray-800 md:rounded-lg shadow-md">
           {method === "edit" && (
             <div className="flex justify-end">
               <div
@@ -215,9 +229,29 @@ export default function TransactionForm({ id = "", method }) {
             </div>
           </div>
           <div>
-            <Label>Sub-Category</Label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row my-1">
-              {subcategories?.get_client_categories?.map((e: string, subcategoryIndex: number) => (
+            <Label>Description</Label>
+            <div className="flex mb-2">
+              {/* <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row my-1"> */}
+              <Select onChange={(e) => setForm({ ...form, subcategory: e.target.value })} value={form.subcategory}>
+                {subcategories?.get_client_categories?.sort().map((e: string, subcategoryIndex: number) => (
+                  <option
+                    key={`subcategory-${subcategoryIndex}`}
+                    // onClick={() => setForm({ ...form, subcategory: e })}
+                    // type="button"
+                    value={e}
+                  // className={`${form.subcategory === e
+                  //   ? "bg-green-700 text-gray-100"
+                  //   : "bg-white hover:bg-green-100 transition"
+                  //   } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${e.length > 12 && "col-span-2"} row-span-1`}
+                  >
+                    {capitalize(e)}
+                  </option>
+                ))}
+                <option value="custom">
+                  Custom
+                </option>
+              </Select>
+              {/* {subcategories?.get_client_categories?.sort().map((e: string, subcategoryIndex: number) => (
                 <Button
                   key={`subcategory-${subcategoryIndex}`}
                   onClick={() => setForm({ ...form, subcategory: e })}
@@ -229,8 +263,8 @@ export default function TransactionForm({ id = "", method }) {
                 >
                   {capitalize(e)}
                 </Button>
-              ))}
-              <Button
+              ))} */}
+              {/* <Button
                 onClick={() => setForm({ ...form, subcategory: "custom" })}
                 type="button"
                 className={`${form.subcategory === "custom"
@@ -239,7 +273,7 @@ export default function TransactionForm({ id = "", method }) {
                   } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm row-span-1`}
               >
                 Custom
-              </Button>
+              </Button> */}
             </div>
             {form.subcategory === "custom" && <Input onChange={handleChange} placeholder="New subcategory" type="text" name="new_subcategory" />}
           </div>
@@ -254,7 +288,7 @@ export default function TransactionForm({ id = "", method }) {
               value={form.amount}
             />
           </div>
-          <div>
+          {/* <div>
             <Label>Note</Label>
             <Input
               placeholder="Note"
@@ -263,7 +297,7 @@ export default function TransactionForm({ id = "", method }) {
               onChange={handleChange}
               value={form.note}
             />
-          </div>
+          </div> */}
           <div>
             <Label>Date</Label>
             <Input

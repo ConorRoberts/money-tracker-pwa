@@ -10,9 +10,7 @@ const GET_USER_DATA = gql`
 export default function useClientCategories() {
     const [session, _] = useSession();
 
-    const { data, refetch } = useQuery(GET_USER_DATA, {
-        variables: { id: session?.user.id ?? " " },
+    return useQuery(GET_USER_DATA, {
+        variables: { id: session?.user.id },
     });
-
-    return [data, refetch];
 };

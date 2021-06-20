@@ -4,7 +4,7 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     fontFamily: {
-      'sans': ['"Open Sans"', '"ui-sans-serif"', 'system-ui'],
+      'sans': ['"Open Sans"', 'ui-sans-serif', 'system-ui'],
     },
     extend: {
       keyframes: {
