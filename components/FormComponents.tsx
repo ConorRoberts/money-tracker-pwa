@@ -41,7 +41,7 @@ export const Input = (props: InputProps) => {
   return (
     <input
       {...props}
-      className={`bg-white rounded-md w-full border border-gray-300 py-1 px-2 focus:ring-1 focus:outline-none appearance-none ${props.className}`}
+      className={`bg-white text-white rounded-md w-full border placeholder-gray-300 bg-opacity-20 border-gray-300 py-2 px-2 focus:ring-1 focus:outline-none appearance-none ${props.className}`}
     />
   );
 };

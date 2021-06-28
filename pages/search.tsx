@@ -13,13 +13,12 @@ const GET_TRANSACTIONS = gql`
     query getTransactionsBetween($id:String,$start:String,$end:String){
         get_transactions_between(id:$id,start:$start,end:$end){
             id
-            note
             category
             amount
             created_at
             taxable
             type
-            subcategory
+            description
         }
     }
 `;
@@ -86,7 +85,7 @@ export default function Search() {
                         <Label>Property</Label>
                         <Select onChange={(e: any) => setFilterProperty(e.target.value)} value={filterProperty}>
                             <option value="">None</option>
-                            {["note", "subcategory", "category", "type"].map((e, index) => <option key={`filterProperty-${index}`} value={e} className="capitalize">{capitalize(e)}</option>)}
+                            {["description", "category", "type"].map((e, index) => <option key={`filterProperty-${index}`} value={e} className="capitalize">{capitalize(e)}</option>)}
                         </Select>
                     </div>
                 </div>
@@ -100,8 +99,7 @@ export default function Search() {
                     <p>{`$${transactions?.filter(e => e.type === "expense").map(e => e.amount).reduce((a, b) => a + b, 0).toLocaleString()}`}</p>
                 </div>
             </div>
-            <div className={`flex flex-wrap flex-row gap-2
-          } justify-center mt-5 w-full max-w-screen-xl mx-auto`}>
+            <div className={`grid grid-flow-row gap-2 lg:grid-cols-2 mt-5 w-full`}>
                 {transactions?.slice(sliceStart, sliceEnd)?.map((e: Transaction, index: number) => <TransactionCard {...e} key={index} />)}
             </div>
             {sliceEnd < transactions?.length && transactions?.length > 0 && <div className="flex justify-center">

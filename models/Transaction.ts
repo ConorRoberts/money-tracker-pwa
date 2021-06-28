@@ -18,6 +18,10 @@ export const transactionSchema = new Schema({
         type: String,
         default: null
     },
+    description: {
+        type: String,
+        default: null
+    },
     amount: {
         type: Number,
         default: 0
