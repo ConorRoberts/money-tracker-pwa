@@ -47,8 +47,6 @@ export default function Home() {
     pollInterval: 1000
   });
 
-  // console.log(data);
-
   useEffect(() => {
     const today = new Date();
 
