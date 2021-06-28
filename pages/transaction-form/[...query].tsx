@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
   Input,
-  Select,
   Button,
   Checkbox,
   Label,
@@ -13,9 +12,9 @@ import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import categories from "@utils/categories";
 import Image from "next/image";
 import capitalize from "@utils/capitalize";
-import useClientCategories from "@utils/useClientCategories";
 import dateConvert from "@utils/dateConvert";
 import Transaction from "@typedefs/transaction";
+import { FaTrashAlt as TrashIcon } from "react-icons/fa";
 
 const UPDATE_TRANSACTION = gql`
   mutation updateTransaction($id: String!, $transaction: TransactionInput!) {
@@ -47,13 +46,12 @@ const GET_TRANSACTION = gql`
   query getTransaction($id: String!) {
     get_transaction(id: $id) {
       id
-      note
       category
       amount
       created_at
       taxable
       type
-      subcategory
+      description
     }
   }
 `;
@@ -86,28 +84,26 @@ export default function TransactionForm({ id = "", method }) {
   });
   const [errors, setErrors] = useState(null);
   const [form, setForm] = useState({
-    note: "",
     amount: "",
     category: "",
-    subcategory: "custom",
-    new_subcategory: "",
+    description: "",
     type: "",
     created_at: DATE_DEFAULT,
     taxable: false,
   });
+
   const errorRef: any = useRef();
-  const { data: subcategories } = useClientCategories();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { note, subcategory, category, amount, type, taxable, created_at, new_subcategory } = form;
+    const { description, category, amount, type, taxable, created_at } = form;
 
     if (type === "") {
       return setErrors("Error - Type missing.");
     } else if (category === "") {
       return setErrors("Error - Category missing.");
-    } else if (subcategory === "custom" && new_subcategory === "") {
+    } else if (description === "") {
       return setErrors("Error - Description missing.");
     } else if (amount === "") {
       return setErrors("Error - Amount missing.");
@@ -115,11 +111,10 @@ export default function TransactionForm({ id = "", method }) {
 
     const transaction: Transaction = {
       category: category.toLowerCase(),
-      subcategory: subcategory.toLowerCase() === "custom" ? new_subcategory.toLowerCase() : subcategory.toLowerCase(),
       amount: +amount,
       type: type.toLowerCase(),
       taxable,
-      note,
+      description,
       created_at: created_at === DATE_DEFAULT
         ? new Date()
         : dateConvert(created_at),
@@ -166,6 +161,7 @@ export default function TransactionForm({ id = "", method }) {
       setForm({
         ...filteredData,
         created_at: data?.get_transaction.created_at.slice(0, 10),
+        description: data?.get_transaction.description ?? ""
       });
     }
   }, [data]);
@@ -185,12 +181,15 @@ export default function TransactionForm({ id = "", method }) {
         </div>}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5 bg-gray-800 md:rounded-lg shadow-md">
           {method === "edit" && (
-            <div className="flex justify-end">
-              <div
-                className="rounded-md hover:bg-gray-700 transition p-3 flex items-center cursor-pointer"
-                onClick={() => deleteTransaction({ variables: { id } })}
-              >
-                <Image src="/Trash_White.svg" width={20} height={20} />
+            <div className="flex justify-center items-center">
+              <p className="text-white font-thin text-xl">Edit Transaction</p>
+              <div className="flex justify-end flex-1">
+                <div
+                  className="rounded-md hover:bg-gray-700 transition p-3 flex items-center cursor-pointer"
+                  onClick={() => deleteTransaction({ variables: { id } })}
+                >
+                  <TrashIcon className="w-5 h-5 text-white" />
+                </div>
               </div>
             </div>
           )}
@@ -213,69 +212,24 @@ export default function TransactionForm({ id = "", method }) {
           <div>
             <Label>Category</Label>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row">
-              {Object.keys(categories).map((e, categoryIdx) => (
+              {Object.entries(categories).filter(([_key, val]) => val.type === form.type).map(([key], categoryIdx) => (
                 <Button
                   key={`category-${categoryIdx}`}
-                  onClick={() => setForm({ ...form, category: e })}
+                  onClick={() => setForm({ ...form, category: key })}
                   type="button"
-                  className={`${form.category === e
+                  className={`${form.category === key
                     ? "bg-green-700 text-gray-100"
                     : "bg-white hover:bg-green-100 transition"
-                    } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${e.length > 12 && "col-span-2"} row-span-1`}
+                    } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${key.length > 12 && "col-span-2"} row-span-1`}
                 >
-                  {capitalize(e)}
+                  {capitalize(key)}
                 </Button>
               ))}
             </div>
           </div>
           <div>
             <Label>Description</Label>
-            <div className="flex mb-2">
-              {/* <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row my-1"> */}
-              <Select onChange={(e) => setForm({ ...form, subcategory: e.target.value })} value={form.subcategory}>
-                {subcategories?.get_client_categories?.sort().map((e: string, subcategoryIndex: number) => (
-                  <option
-                    key={`subcategory-${subcategoryIndex}`}
-                    // onClick={() => setForm({ ...form, subcategory: e })}
-                    // type="button"
-                    value={e}
-                  // className={`${form.subcategory === e
-                  //   ? "bg-green-700 text-gray-100"
-                  //   : "bg-white hover:bg-green-100 transition"
-                  //   } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${e.length > 12 && "col-span-2"} row-span-1`}
-                  >
-                    {capitalize(e)}
-                  </option>
-                ))}
-                <option value="custom">
-                  Custom
-                </option>
-              </Select>
-              {/* {subcategories?.get_client_categories?.sort().map((e: string, subcategoryIndex: number) => (
-                <Button
-                  key={`subcategory-${subcategoryIndex}`}
-                  onClick={() => setForm({ ...form, subcategory: e })}
-                  type="button"
-                  className={`${form.subcategory === e
-                    ? "bg-green-700 text-gray-100"
-                    : "bg-white hover:bg-green-100 transition"
-                    } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${e.length > 12 && "col-span-2"} row-span-1`}
-                >
-                  {capitalize(e)}
-                </Button>
-              ))} */}
-              {/* <Button
-                onClick={() => setForm({ ...form, subcategory: "custom" })}
-                type="button"
-                className={`${form.subcategory === "custom"
-                  ? "bg-green-700 text-gray-100"
-                  : "bg-white hover:bg-green-100 transition"
-                  } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm row-span-1`}
-              >
-                Custom
-              </Button> */}
-            </div>
-            {form.subcategory === "custom" && <Input onChange={handleChange} placeholder="New subcategory" type="text" name="new_subcategory" />}
+            <Input onChange={handleChange} name="description" value={form.description} type="text" placeholder="Description" />
           </div>
           <div>
             <Label>Amount</Label>
@@ -288,16 +242,6 @@ export default function TransactionForm({ id = "", method }) {
               value={form.amount}
             />
           </div>
-          {/* <div>
-            <Label>Note</Label>
-            <Input
-              placeholder="Note"
-              type="text"
-              name="note"
-              onChange={handleChange}
-              value={form.note}
-            />
-          </div> */}
           <div>
             <Label>Date</Label>
             <Input
@@ -307,14 +251,14 @@ export default function TransactionForm({ id = "", method }) {
               value={form.created_at}
             />
           </div>
-          <div className="flex flex-col items-center">
-            <Label>Taxable?</Label>
+          <div className="flex gap-3 justify-start items-center">
             <Checkbox
-              className="w-7 h-7"
+              className="w-6 h-6"
               name="taxable"
               value={form.taxable}
               onClick={() => setForm({ ...form, taxable: !form.taxable })}
             />
+            <Label>Flag as Taxable</Label>
           </div>
           <div className="flex justify-center">
             <Button

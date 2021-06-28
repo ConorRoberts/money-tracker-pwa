@@ -11,14 +11,16 @@ const schema = gql`
         taxable:Boolean!
         type:String!
         subcategory:String
+        description:String
         author:Client
     }
 
     input TransactionInput {
-        note: String!
+        note: String
         type:String!
         category:String
         subcategory:String
+        description:String
         amount:Float!
         taxable:Boolean
         created_at:String

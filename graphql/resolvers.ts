@@ -95,24 +95,38 @@ const resolvers = {
                             $lte: Date.parse(end),
                         },
                         author: client.id
-                    });
+                    }).sort({ created_at: "desc" });
                 } else if (start) {
                     transactions = await Transaction.find({
                         created_at: {
                             $gte: Date.parse(start),
                         },
                         author: client.id
-                    });
+                    }).sort({ created_at: "desc" });
                 } else if (end) {
                     transactions = await Transaction.find({
                         created_at: {
                             $lte: Date.parse(end),
                         },
                         author: client.id
-                    });
+                    }).sort({ created_at: "desc" });
+                } else {
+                    transactions = await Transaction.find({
+                        author: client.id
+                    }).sort({ created_at: "desc" });
                 }
 
-                return transactions?.length ? sortTransactions(transactions.map((e: any) => formatTransaction(e))) : [];
+                // for (const i of transactions) {
+                //     let new_value = "";
+                //     if (i.note?.length) {
+                //         new_value = i.note;
+                //     } else if (i.subcategory?.length) {
+                //         new_value = i.subcategory;
+                //     }
+                //     await Transaction.findOneAndUpdate({ _id: i.id }, { description: new_value });
+                // }
+
+                return transactions?.length ? transactions.map((e: any) => formatTransaction(e)) : [];
             } catch (e) {
                 console.error(e);
                 return null;

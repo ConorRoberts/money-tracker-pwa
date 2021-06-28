@@ -52,7 +52,7 @@ const CustomTooltip = ({ item, data }: { item: any, data: ChartData[] }) => {
     <div className="flex flex-col gap-1">
       <div className="justify-between flex gap-4 items-center">
         <p className="font-semibold">Revenue</p>
-        <p className="bg-green-600 rounded-md py-1 px-2">{`$${revenue}`}</p>
+        <p className="bg-green-600 rounded-md py-1 px-2">{`$${revenue.toLocaleString()}`}</p>
       </div>
       {/* {revenuePercentage && revenuePercentage !== 1 &&
         <div className={`flex justify-center items-center rounded-md py-1 px-4 gap-2 font-semibold bg-gray-600`}>
@@ -67,7 +67,7 @@ const CustomTooltip = ({ item, data }: { item: any, data: ChartData[] }) => {
     <div className="flex flex-col gap-1">
       <div className="justify-between flex gap-4 items-center">
         <p className="font-semibold">Expense</p>
-        <p className="bg-red-600 rounded-md py-1 px-2">{`$${expense}`}</p>
+        <p className="bg-red-600 rounded-md py-1 px-2">{`$${expense.toLocaleString()}`}</p>
       </div>
       {/* {expensePercentage && expensePercentage !== 1 &&
         <div className={`flex justify-center items-center rounded-md py-1 px-4 gap-2 font-semibold bg-gray-600`}>
