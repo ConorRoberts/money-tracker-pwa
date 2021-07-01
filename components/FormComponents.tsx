@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import Image from "next/image";
+import { IoIosArrowUp as ArrowIcon } from "react-icons/io";
+import { AiOutlineCheck as CheckIcon } from "react-icons/ai";
+import { BiHelpCircle as TooltipIcon } from "react-icons/bi";
 
 interface ButtonProps {
   className?: string,
@@ -85,7 +87,7 @@ export const Select = (props: SelectProps) => {
   return (
     <div className={`relative w-full flex items-center`}>
       <select
-        className={`py-1 pl-2 pr-6 w-full rounded-md appearance-none focus:ring-1 focus:outline-none border border-gray-300 bg-white`}
+        className={`py-2 pl-2 pr-6 w-full rounded-md appearance-none focus:ring-1 focus:outline-none border border-gray-600 bg-white`}
         {...props}
         onBlur={onBlur}
         onClick={onClick}
@@ -96,7 +98,7 @@ export const Select = (props: SelectProps) => {
         className={`absolute right-1 top-0 flex items-center bottom-0 transform transition-transform duration-75 ${open && "rotate-180"
           }`}
       >
-        <Image width={22} height={22} src="/Arrow_Down.svg" />
+        <ArrowIcon className="w-5 h-5 text-black fill-current" />
       </div>
     </div>
   );
@@ -137,7 +139,7 @@ export const Checkbox = (props: CheckboxProps) => {
         className={`absolute cursor-pointer top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 filter ${props.value ? "opacity-100" : "opacity-0"
           }`}
       >
-        <Image layout="fill" src="/Check.svg" priority />
+        <CheckIcon className="w-5 h-5" />
       </div>
     </div>
   );
@@ -156,12 +158,7 @@ export const Tooltip = (props: TooltipProps) => {
       onMouseOver={() => setVisible(true)}
       onMouseLeave={() => setVisible(false)}
     >
-      <Image
-        src="/graphics/Tooltip.svg"
-        width={25}
-        height={25}
-        className="cursor-pointer"
-      />
+      <TooltipIcon className="w-5 h-5 text-white fill-current" />
       {visible && (
         <div className="absolute top-0 right-0 p-2 rounded-md bg-gray-800 text-gray-100 bg-opacity-95 border border-gray-600 w-48 font-medium shadow-md z-10">
           {props.text}

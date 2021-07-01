@@ -10,7 +10,6 @@ import Loading from "@components/Loading";
 import { useSession } from "next-auth/client";
 import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import categories from "@utils/categories";
-import Image from "next/image";
 import capitalize from "@utils/capitalize";
 import dateConvert from "@utils/dateConvert";
 import Transaction from "@typedefs/transaction";
@@ -56,7 +55,7 @@ const GET_TRANSACTION = gql`
   }
 `;
 
-const DATE_DEFAULT = new Date().toISOString().slice(0, 10);
+const defaultDate = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, "0")}-${new Date().getDate()}`;
 
 const getColumnSpan = (n: number, max: number, cols: number) => {
   const x = Math.floor(n / max) % cols
@@ -88,7 +87,7 @@ export default function TransactionForm({ id = "", method }) {
     category: "",
     description: "",
     type: "",
-    created_at: DATE_DEFAULT,
+    created_at: defaultDate,
     taxable: false,
   });
 
@@ -115,7 +114,7 @@ export default function TransactionForm({ id = "", method }) {
       type: type.toLowerCase(),
       taxable,
       description,
-      created_at: created_at === DATE_DEFAULT
+      created_at: created_at === defaultDate
         ? new Date()
         : dateConvert(created_at),
     };
