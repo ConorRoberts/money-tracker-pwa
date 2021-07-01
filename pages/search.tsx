@@ -6,8 +6,7 @@ import { Input, Label, Select } from '@components/FormComponents';
 import { gql, useQuery } from '@apollo/client';
 import { useSession } from 'next-auth/client';
 import dateConvert from '@utils/dateConvert';
-import { AiOutlinePlus as PlusIcon } from "react-icons/ai";
-import capitalize from '@utils/capitalize';
+import { AiOutlinePlus as PlusIcon, AiOutlineLoading as LoadingIcon } from "react-icons/ai";
 
 const GET_TRANSACTIONS = gql`
     query getTransactionsBetween($id:String,$start:String,$end:String){
@@ -38,21 +37,17 @@ export default function Search() {
     const [sliceEnd, setSliceEnd] = useState(25);
     const [transactions, setTransactions] = useState([]);
 
-    const { data } = useQuery(GET_TRANSACTIONS, { variables: { id: session?.user?.id, start: mode === "before" ? null : start?.toISOString(), end: mode === "after" ? null : end?.toISOString() } })
+    const { data, loading: dataLoading } = useQuery(GET_TRANSACTIONS, { variables: { id: session?.user?.id, start: mode === "before" ? null : start?.toISOString(), end: mode === "after" ? null : end?.toISOString() } })
 
     useEffect(() => {
-        let t = [];
-
         if (mode === "between" && (!start || !end)) return;
 
-        if (filterProperty !== "") {
-            t = data?.get_transactions_between?.filter(e => e[filterProperty.toLowerCase()]?.toLowerCase().includes(filterText.toLowerCase()));
-        } else {
-            t = data?.get_transactions_between;
-        }
+        const lowerCaseFilterText = filterText.toLowerCase();
+
+        const t = data?.get_transactions_between?.filter(({ description, type, category }) => description?.toLowerCase().includes(lowerCaseFilterText) || type.includes(lowerCaseFilterText) || category.includes(lowerCaseFilterText));
 
         setTransactions(t);
-    }, [data, filterText, filterProperty]);
+    }, [data, filterText]);
 
     if (!session || loading) return <Loading />
 
@@ -60,6 +55,7 @@ export default function Search() {
         <div className="flex-1 bg-gray-900 px-2 pt-4 pb-20">
             <h1 className="text-gray-100 text-4xl font-semibold my-3 text-center">Search</h1>
             <div className="mx-auto w-full max-w-screen-sm">
+                <Label>Search Criteria</Label>
                 <Select onChange={(e: any) => setMode(e.target.value)}>
                     <option value="between">Between Dates</option>
                     <option value="after">After Date</option>
@@ -81,32 +77,34 @@ export default function Search() {
                         <Label>Query</Label>
                         <Input type="text" onChange={(e: any) => setFilterText(e.target.value)} value={filterText} />
                     </div>
-                    <div>
+                    {/* <div>
                         <Label>Property</Label>
                         <Select onChange={(e: any) => setFilterProperty(e.target.value)} value={filterProperty}>
                             <option value="">None</option>
                             {["description", "category", "type"].map((e, index) => <option key={`filterProperty-${index}`} value={e} className="capitalize">{capitalize(e)}</option>)}
                         </Select>
+                    </div> */}
+                </div>
+            </div>
+            {dataLoading && <div className="flex justify-center items-center"><LoadingIcon className="text-white animate-spin fill-current w-24 h-24 mt-6" /></div>}
+            {!dataLoading && <div>
+                <div className="flex justify-center gap-4 text-lg sm:text-xl my-2">
+                    <div className="rounded-md bg-gray-700 text-green-500 p-3">
+                        <p>{`$${transactions?.filter(e => e.type === "revenue").map(e => e.amount).reduce((a, b) => a + b, 0).toLocaleString()}`}</p>
+                    </div>
+                    <div className="rounded-md bg-gray-700 text-red-500 p-3">
+                        <p>{`$${transactions?.filter(e => e.type === "expense").map(e => e.amount).reduce((a, b) => a + b, 0).toLocaleString()}`}</p>
                     </div>
                 </div>
-            </div>
-
-            <div className="flex justify-center gap-4 text-lg sm:text-xl my-2">
-                <div className="rounded-md bg-gray-700 text-green-500 p-3">
-                    <p>{`$${transactions?.filter(e => e.type === "revenue").map(e => e.amount).reduce((a, b) => a + b, 0).toLocaleString()}`}</p>
+                <div className={`grid grid-flow-row gap-2 lg:grid-cols-2 xl:grid-cols-3 mt-5 w-full max-w-screen-lg mx-auto`}>
+                    {transactions?.slice(sliceStart, sliceEnd)?.map((e: Transaction, index: number) => <TransactionCard {...e} key={index} />)}
                 </div>
-                <div className="rounded-md bg-gray-700 text-red-500 p-3">
-                    <p>{`$${transactions?.filter(e => e.type === "expense").map(e => e.amount).reduce((a, b) => a + b, 0).toLocaleString()}`}</p>
-                </div>
-            </div>
-            <div className={`grid grid-flow-row gap-2 lg:grid-cols-2 mt-5 w-full`}>
-                {transactions?.slice(sliceStart, sliceEnd)?.map((e: Transaction, index: number) => <TransactionCard {...e} key={index} />)}
-            </div>
-            {sliceEnd < transactions?.length && transactions?.length > 0 && <div className="flex justify-center">
-                <PlusIcon
-                    className="bg-gray-800 p-3 rounded-md my-3 hover:bg-gray-600 transition cursor-pointer text-white w-12 h-12"
-                    onClick={() => setSliceEnd(sliceEnd + 25)}
-                />
+                {sliceEnd < transactions?.length && transactions?.length > 0 && <div className="flex justify-center">
+                    <PlusIcon
+                        className="bg-gray-800 p-3 rounded-md my-3 hover:bg-gray-600 transition cursor-pointer text-white w-12 h-12"
+                        onClick={() => setSliceEnd(sliceEnd + 25)}
+                    />
+                </div>}
             </div>}
         </div >
     )

@@ -2,7 +2,7 @@ import _ from "lodash";
 import React, { useState, useEffect } from "react";
 import Loading from "@components/Loading";
 import TransactionCard from "@components/TransactionCard";
-import Options from "@components/Options";
+import Options from "@components/Home/Options";
 
 import { useSession } from "next-auth/client";
 import Chart from "@components/Home/Chart";
@@ -14,6 +14,7 @@ import getWeekStart from "@utils/getWeekStart";
 import { BsFillGearFill as OptionsIcon } from "react-icons/bs";
 import { gql, useQuery } from "@apollo/client";
 import { AiOutlinePlus as PlusIcon } from "react-icons/ai";
+import { cardIncrement, defaultMaxWeeks } from "@config/home";
 
 const GET_TRANSACTIONS = gql`
     query getTransactionsBetween($id:String,$start:String,$end:String){
@@ -30,46 +31,45 @@ const GET_TRANSACTIONS = gql`
     }
 `;
 
-const CARD_INCREMENT = 15;
-
 export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
-  const [options_state, setOptionsState] = useState({
+  const [optionsState, setOptionsState] = useState({
     compact: false,
-    time_period: "month",
+    timePeriod: "month",
     start: null,
     end: null,
+    chartMaxWeeks: defaultMaxWeeks
   });
 
   const { data } = useQuery(GET_TRANSACTIONS, {
-    variables: { id: session?.user?.id, start: options_state.start, end: options_state.end },
+    variables: { id: session?.user?.id, start: optionsState?.start, end: optionsState?.end },
     pollInterval: 1000
   });
 
   useEffect(() => {
     const today = new Date();
 
-    if (options_state.time_period === "month") {
-      const month_start = new Date(today.getFullYear(), today.getMonth(), 1);
-      const month_end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    if (optionsState.timePeriod === "month") {
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1, 23, 59, 59, 999);
+      const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
 
-      setOptionsState({ ...options_state, start: month_start, end: month_end })
-    } else if (options_state.time_period === "year") {
-      const year_start = new Date(today.getFullYear(), 1, 1);
-      const year_end = new Date(today.getFullYear(), 12, 1);
+      setOptionsState({ ...optionsState, start: monthStart, end: monthEnd })
+    } else if (optionsState.timePeriod === "year") {
+      const yearStart = new Date(today.getFullYear(), 0, 1, 0, 0, 0, 0);
+      const yearEnd = new Date(today.getFullYear(), 11, 31, 23, 59, 59, 999);
 
-      setOptionsState({ ...options_state, start: year_start, end: year_end })
-    } else if (options_state.time_period === "all time") {
-      setOptionsState({ ...options_state, start: null, end: null })
-    } else if (options_state.time_period === "day") {
-      setOptionsState({ ...options_state, start: today, end: today })
+      setOptionsState({ ...optionsState, start: yearStart, end: yearEnd })
+    } else if (optionsState.timePeriod === "all time") {
+      setOptionsState({ ...optionsState, start: null, end: null })
+    } else if (optionsState.timePeriod === "day") {
+      setOptionsState({ ...optionsState, start: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 0, 0, 0, 0), end: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999) })
     }
-  }, [options_state.time_period])
+  }, [optionsState.timePeriod])
 
 
   const [open, setOpen] = useState(false);
-  const [card_slice, setCardSlice] = useState(CARD_INCREMENT);
+  const [cardSlice, setCardSlice] = useState(cardIncrement);
 
   if (!loading && !session) router.push("/login");
   if (loading || !data || !session) return <Loading />;
@@ -93,7 +93,7 @@ export default function Home() {
       {open && (
         <Options
           setOpen={setOpen}
-          state={options_state}
+          state={optionsState}
           setState={setOptionsState}
         />
       )}
@@ -118,31 +118,34 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="block md:hidden mt-2">
-          <Chart
-            width={window.innerWidth - 20}
-            height={400}
-            data={getChartData(data?.get_transactions_between)}
-          />
-        </div>
-        <div className="hidden md:block">
-          <Chart
-            width={700}
-            height={500}
-            data={getChartData(data?.get_transactions_between)}
-          />
-        </div>
+        {data?.get_transactions_between.length > 0 &&
+          <div>
+            <div className="block md:hidden mt-2">
+              <Chart
+                width={window.innerWidth - 20}
+                height={400}
+                data={getChartData(data?.get_transactions_between).slice(-1 * optionsState.chartMaxWeeks)}
+              />
+            </div>
+            <div className="hidden md:block">
+              <Chart
+                width={700}
+                height={500}
+                data={getChartData(data?.get_transactions_between).slice(-1 * optionsState.chartMaxWeeks)}
+              />
+            </div>
+          </div>}
       </div>
 
       <div
-        className={`mx-1 gap-2 grid grid-flow-row w-full sm:mx-auto sm:w-2/3 max-w-3xl sm:gap-3 ${options_state.compact ? "grid-cols-3 sm:grid-cols-5" : "lg:grid-cols-2"
+        className={`mx-1 gap-2 grid grid-flow-row w-full sm:mx-auto sm:w-2/3 max-w-5xl sm:gap-3 ${optionsState.compact ? "grid-cols-3 sm:grid-cols-5" : "lg:grid-cols-2 xl:grid-cols-3"
           } mt-5`}
       >
         {
           data?.get_transactions_between
-            .slice(0, card_slice)
+            .slice(0, cardSlice)
             .map((e: any, index: number) =>
-              options_state.compact ? (
+              optionsState.compact ? (
                 <CompactTransactionCard
                   {...e}
                   key={`transaction-card-${index}`}
@@ -156,11 +159,11 @@ export default function Home() {
             )
         }
       </div>
-      {card_slice < data.get_transactions_between.length && <div className="flex justify-center">
+      {cardSlice < data.get_transactions_between.length && <div className="flex justify-center">
         <div
           className="bg-gray-800 p-2 rounded-md my-3 hover:bg-gray-700 transition cursor-pointer flex items-center text-white text-2xl"
           onClick={() =>
-            setCardSlice(card_slice + CARD_INCREMENT)}
+            setCardSlice(cardSlice + cardIncrement)}
         >
           <PlusIcon />
         </div>
@@ -188,7 +191,7 @@ const getChartData = (transactions: Transaction[]): { key: string, revenue: numb
   const groupedByType = groupedByDate.map(([key, value]: [key: string, value: Transaction[]]): { key: string, revenue: number, expense: number } => ({
     key: key.split(" ").slice(1, 3).join(" "), revenue: getSum(value, "revenue")
     , expense: getSum(value, "expense"),
-  })).slice(-4);
+  }));
 
   return groupedByType;
 }

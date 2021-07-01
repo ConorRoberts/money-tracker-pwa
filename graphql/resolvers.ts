@@ -86,8 +86,8 @@ const resolvers = {
             if (!client) return null;
 
             try {
-
                 let transactions: any;
+
                 if (start && end) {
                     transactions = await Transaction.find({
                         created_at: {

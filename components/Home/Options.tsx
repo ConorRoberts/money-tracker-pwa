@@ -1,11 +1,24 @@
 import { useRef } from "react";
 import PopupContainer from "@components/PopupContainer";
 import Image from "next/image";
-import { AiOutlineClose as CloseIcon } from "react-icons/ai";
+import { AiOutlineClose as CloseIcon, AiOutlinePlus as PlusIcon, AiOutlineMinus as MinusIcon } from "react-icons/ai";
 import { Label, Button } from "@components/FormComponents";
+import {maxWeeks,minWeeks} from "@config/home";
 
 export default function Options({ setOpen, setState, state }) {
   const ref = useRef(null);
+
+  const handleChangeChartMaxWeeks = (mode: string) => {
+    if (mode === "increase") {
+      const n = state.chartMaxWeeks + 1;
+      if (n > maxWeeks) return;
+      setState({ ...state, chartMaxWeeks: n })
+    } else if (mode === "decrease") {
+      const n = state.chartMaxWeeks - 1;
+      if (n < minWeeks) return;
+      setState({ ...state, chartMaxWeeks: n })
+    }
+  };
 
   return (
     <PopupContainer setOpen={setOpen} passRef={ref}>
@@ -16,8 +29,7 @@ export default function Options({ setOpen, setState, state }) {
               onClick={() => setOpen(!open)}
               className="cursor-pointer p-2 hover:bg-gray-600 rounded-lg flex items-center transition"
             >
-              {/* <Image src="/CloseIcon.svg" priority width={13} height={13} /> */}
-              <CloseIcon className="w-4 h-4 text-white" />
+              <CloseIcon className="w-4 h-4 text-white fill-current" />
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
@@ -27,15 +39,29 @@ export default function Options({ setOpen, setState, state }) {
                 {["all time", "year", "month", "day"].map((e, index) => (
                   <Button
                     key={`time-${index}`}
-                    className={` ${state.time_period === e
+                    className={` ${state.timePeriod === e
                       ? "bg-green-700 text-gray-100"
                       : "bg-white"
                       } rounded-md px-3 py-2 capitalize font-semibold transition`}
-                    onClick={() => setState({ ...state, time_period: e })}
+                    onClick={() => setState({ ...state, timePeriod: e })}
                   >
                     {e}
                   </Button>
                 ))}
+              </div>
+              <Label>Number of Chart Weeks</Label>
+              <div className="flex flex-col justify-center items-center gap-3 my-1">
+                <div>
+                  <p className="text-white text-center font-thin text-3xl">{state.chartMaxWeeks}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-2 font-xl text-white">
+                  <Button onClick={() => handleChangeChartMaxWeeks("increase")} className="bg-green-400 rounded-md flex justify-center p-1">
+                    <PlusIcon className="w-6 h-6 fill-current" />
+                  </Button>
+                  <Button onClick={() => handleChangeChartMaxWeeks("decrease")} className="bg-red-400 rounded-md flex justify-center p-1">
+                    <MinusIcon className="w-6 h-6 fill-current" />
+                  </Button>
+                </div>
               </div>
             </div>
             <div className="flex flex-col justify-start md:items-center gap-2">

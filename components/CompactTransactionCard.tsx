@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import categories from "@utils/categories";
 
-export default function CompactTransactionCard({ id, amount, category, type }) {
+export default function CompactTransactionCard({ id, amount, category, type, created_at }) {
   const Icon = categories[category]?.Icon ?? categories["other"].Icon
   return (
     <Link href={`/transaction-form/edit/${id}`}>
@@ -10,10 +10,13 @@ export default function CompactTransactionCard({ id, amount, category, type }) {
         <div className="rounded-full bg-gray-600 p-5 flex justify-center items-center border border-gray-500">
           <Icon className="w-6 h-6 text-white" />
         </div>
-        <div>
+        <div className="grid text-center w-full">
           <h3
             className={`${type === "revenue" ? "text-green-500" : "text-red-500"} font-normal ${amount > 10000 ? "text-base" : "text-xl"}`}
           >{`$${amount.toLocaleString()}`}</h3>
+          <p className="text-white text-sm">
+            {new Date(created_at).toDateString().split(" ").slice(1, 3).join(" ")}
+          </p>
         </div>
       </div>
     </Link>
