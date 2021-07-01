@@ -51,7 +51,7 @@ export default function Home() {
     const today = new Date();
 
     if (optionsState.timePeriod === "month") {
-      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1, 23, 59, 59, 999);
+      const monthStart = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0, 0);
       const monthEnd = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
 
       setOptionsState({ ...optionsState, start: monthStart, end: monthEnd })
