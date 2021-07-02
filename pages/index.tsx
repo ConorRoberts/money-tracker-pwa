@@ -31,6 +31,15 @@ const GET_TRANSACTIONS = gql`
     }
 `;
 
+
+const getTotal = (data: Transaction[], key: string) => {
+  if (!data) return 0;
+
+  return data.filter((e: any) => e?.type?.toLowerCase() === key)
+    .map((e: any) => e.amount)
+    .reduce((a: number, b: number) => a + b, 0);
+}
+
 export default function Home() {
   const [session, loading] = useSession();
   const router = useRouter();
@@ -42,7 +51,7 @@ export default function Home() {
     chartMaxWeeks: defaultMaxWeeks
   });
 
-  const { data } = useQuery(GET_TRANSACTIONS, {
+  const { data, loading: dataLoading } = useQuery(GET_TRANSACTIONS, {
     variables: { id: session?.user?.id, start: optionsState?.start, end: optionsState?.end },
     pollInterval: 1000
   });
@@ -71,18 +80,12 @@ export default function Home() {
   const [open, setOpen] = useState(false);
   const [cardSlice, setCardSlice] = useState(cardIncrement);
 
-  if (!loading && !session) router.push("/login");
-  if (loading || !data || !session) return <Loading />;
+  if (!loading && !session) {
+    router.push("/login");
+    return <Loading />;
+  };
 
-  const revenue_total = data?.get_transactions_between
-    .filter((e: any) => e?.type?.toLowerCase() === "revenue")
-    .map((e: any) => e.amount)
-    .reduce((a: number, b: number) => a + b, 0);
-
-  const expense_total = data?.get_transactions_between
-    .filter((e: any) => e?.type?.toLowerCase() === "expense")
-    .map((e: any) => e.amount)
-    .reduce((a: number, b: number) => a + b, 0);
+  if (loading || dataLoading || !session) return <Loading />;
 
   return (
     <div className="bg-gray-900 flex flex-1 items-center min-h-screen flex-col p-1 pb-20 sm:pb-0 relative" >
@@ -100,19 +103,19 @@ export default function Home() {
       <div className="mt-2">
         <div className="flex flex-col items-center gap-3">
           <p className="text-2xl text-white">
-            ${(revenue_total - expense_total).toLocaleString()}
+            ${(getTotal(data.get_transactions_between, "revenue") - getTotal(data.get_transactions_between, "expense")).toLocaleString()}
           </p>
           <div className="flex flex-row gap-x-5">
             <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
               <p className="text-gray-500">Inc:</p>
               <p className="text-green-500">
-                ${revenue_total?.toLocaleString()}
+                ${getTotal(data.get_transactions_between, "revenue")?.toLocaleString()}
               </p>
             </div>
             <div className="flex flex-row gap-x-2 rounded-full py-1 px-3 bg-gray-800">
               <p className="text-gray-500">Exp:</p>
               <p className="text-red-500">
-                ${expense_total?.toLocaleString()}
+                ${getTotal(data.get_transactions_between, "expense")?.toLocaleString()}
               </p>
             </div>
           </div>
