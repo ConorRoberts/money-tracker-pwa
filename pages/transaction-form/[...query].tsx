@@ -14,6 +14,7 @@ import capitalize from "@utils/capitalize";
 import dateConvert from "@utils/dateConvert";
 import Transaction from "@typedefs/transaction";
 import { FaTrashAlt as TrashIcon } from "react-icons/fa";
+import numberFilter from "@utils/numberFilter";
 
 const UPDATE_TRANSACTION = gql`
   mutation updateTransaction($id: String!, $transaction: TransactionInput!) {
@@ -55,18 +56,7 @@ const GET_TRANSACTION = gql`
   }
 `;
 
-const defaultDate = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, "0")}-${new Date().getDate()}`;
-
-const getColumnSpan = (n: number, max: number, cols: number) => {
-  const x = Math.floor(n / max) % cols
-  if (x == 1) {
-    return "col-span-1";
-  } else if (x == 2) {
-    return "col-span-2";
-  } else if (x == 3) {
-    return "col-span-3";
-  }
-};
+const defaultDate = `${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, "0")}-${(new Date().getDate()).toString().padStart(2, "0")}`;
 
 export default function TransactionForm({ id = "", method }) {
   const [session, loading] = useSession();
@@ -141,10 +131,10 @@ export default function TransactionForm({ id = "", method }) {
   };
 
   const handleChange = (e: any) => {
-    const { name, value } = e.target;
+    const { name, value, type = "text" } = e.target;
     setForm({
       ...form,
-      [name]: value,
+      [name]: type === "number" ? numberFilter(value) : value,
     });
   };
 
@@ -174,101 +164,99 @@ export default function TransactionForm({ id = "", method }) {
 
   return (
     <div className="bg-gray-900 flex-1 p-2 pb-24">
-      <div className="w-full md:w-3/4 xl:w-1/3 mx-auto mt-2 sm:mt-16">
-        {errors && <div ref={errorRef} className="bg-red-300 rounded-md text-center py-2 mb-3 font-semibold">
-          {errors}
-        </div>}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5 bg-gray-800 md:rounded-lg shadow-md">
-          {method === "edit" && (
-            <div className="flex justify-center items-center">
-              <p className="text-white font-thin text-xl">Edit Transaction</p>
-              <div className="flex justify-end flex-1">
-                <div
-                  className="rounded-md hover:bg-gray-700 transition p-3 flex items-center cursor-pointer"
-                  onClick={() => deleteTransaction({ variables: { id } })}
-                >
-                  <TrashIcon className="w-5 h-5 text-white" />
-                </div>
+      {errors && <div ref={errorRef} className="bg-red-300 rounded-md text-center py-2 mb-3 font-semibold">
+        {errors}
+      </div>}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-5 bg-gray-800 md:rounded-lg shadow-md max-w-2xl mx-auto mt-2 sm:mt-16">
+        {method === "edit" && (
+          <div className="flex justify-center items-center">
+            <p className="text-white font-thin text-xl">Edit Transaction</p>
+            <div className="flex justify-end flex-1">
+              <div
+                className="rounded-md hover:bg-gray-700 transition p-3 flex items-center cursor-pointer"
+                onClick={() => deleteTransaction({ variables: { id } })}
+              >
+                <TrashIcon className="w-5 h-5 text-white" />
               </div>
             </div>
-          )}
-          <div>
-            <Label>Transaction Type</Label>
-            <div className="flex justify-start gap-4">
-              {["revenue", "expense"].map((e, typeIndex) => <Button
-                onClick={() => setForm({ ...form, type: e })}
+          </div>
+        )}
+        <div>
+          <Label>Transaction Type</Label>
+          <div className="flex justify-start gap-4">
+            {["revenue", "expense"].map((e, typeIndex) => <Button
+              onClick={() => setForm({ ...form, type: e })}
+              type="button"
+              key={`type-${typeIndex}`}
+              className={`${form.type === e
+                ? "bg-green-700 text-gray-100"
+                : "bg-white hover:bg-green-100 transition"
+                } p-2 rounded-md shadow-md whitespace-nowrap transition flex-1 `}
+            >
+              {capitalize(e)}
+            </Button>)}
+          </div>
+        </div>
+        <div>
+          <Label>Category</Label>
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 grid-flow-row">
+            {Object.entries(categories).filter(([_key, val]) => val.type === form.type).map(([key], categoryIdx) => (
+              <Button
+                key={`category-${categoryIdx}`}
+                onClick={() => setForm({ ...form, category: key })}
                 type="button"
-                key={`type-${typeIndex}`}
-                className={`${form.type === e
+                className={`${form.category === key
                   ? "bg-green-700 text-gray-100"
                   : "bg-white hover:bg-green-100 transition"
-                  } p-2 rounded-md shadow-md whitespace-nowrap transition flex-1 `}
+                  } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${key.length > 12 ? "col-span-2" : "col-span-1"} row-span-1`}
               >
-                {capitalize(e)}
-              </Button>)}
-            </div>
+                {capitalize(key)}
+              </Button>
+            ))}
           </div>
-          <div>
-            <Label>Category</Label>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 grid-flow-row">
-              {Object.entries(categories).filter(([_key, val]) => val.type === form.type).map(([key], categoryIdx) => (
-                <Button
-                  key={`category-${categoryIdx}`}
-                  onClick={() => setForm({ ...form, category: key })}
-                  type="button"
-                  className={`${form.category === key
-                    ? "bg-green-700 text-gray-100"
-                    : "bg-white hover:bg-green-100 transition"
-                    } p-2 rounded-md shadow-md whitespace-nowrap transition text-sm ${key.length > 12 && "col-span-2"} row-span-1`}
-                >
-                  {capitalize(key)}
-                </Button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <Label>Description</Label>
-            <Input onChange={handleChange} name="description" value={form.description} type="text" placeholder="Description" />
-          </div>
-          <div>
-            <Label>Amount</Label>
-            <Input
-              placeholder="Amount"
-              type="number"
-              name="amount"
-              step=".01"
-              onChange={handleChange}
-              value={form.amount}
-            />
-          </div>
-          <div>
-            <Label>Date</Label>
-            <Input
-              type="date"
-              name="created_at"
-              onChange={handleChange}
-              value={form.created_at}
-            />
-          </div>
-          <div className="flex gap-3 justify-start items-center">
-            <Checkbox
-              className="w-6 h-6"
-              name="taxable"
-              value={form.taxable}
-              onClick={() => setForm({ ...form, taxable: !form.taxable })}
-            />
-            <Label>Flag as Taxable</Label>
-          </div>
-          <div className="flex justify-center">
-            <Button
-              type="submit"
-              className="rounded-md bg-green-700 transition text-gray-100 px-5 py-2 hover:bg-green-900"
-            >
-              Submit
-            </Button>
-          </div>
-        </form>
-      </div>
+        </div>
+        <div>
+          <Label>Description</Label>
+          <Input onChange={handleChange} name="description" value={form.description} type="text" placeholder="Description" />
+        </div>
+        <div>
+          <Label>Amount</Label>
+          <Input
+            placeholder="Amount"
+            type="number"
+            name="amount"
+            step=".01"
+            onChange={handleChange}
+            value={form.amount}
+          />
+        </div>
+        <div>
+          <Label>Date</Label>
+          <Input
+            type="date"
+            name="created_at"
+            onChange={handleChange}
+            value={form.created_at}
+          />
+        </div>
+        <div className="flex gap-3 justify-start items-center">
+          <Checkbox
+            className="w-6 h-6"
+            name="taxable"
+            value={form.taxable}
+            onClick={() => setForm({ ...form, taxable: !form.taxable })}
+          />
+          <Label>Flag as Taxable</Label>
+        </div>
+        <div className="flex justify-center">
+          <Button
+            type="submit"
+            className="rounded-md bg-green-700 transition text-gray-100 px-5 py-2 hover:bg-green-900"
+          >
+            Submit
+          </Button>
+        </div>
+      </form>
     </div >
   );
 }
