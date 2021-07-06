@@ -131,7 +131,7 @@ export default function TransactionForm({ id = "", method }) {
   };
 
   const handleChange = (e: any) => {
-    const { name, value, type = "text" } = e.target;
+    const { name, value, type } = e.target;
     setForm({
       ...form,
       [name]: type === "number" ? numberFilter(value) : value,
