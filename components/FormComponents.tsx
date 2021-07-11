@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { IoIosArrowUp as ArrowIcon } from "react-icons/io";
 import { AiOutlineCheck as CheckIcon } from "react-icons/ai";
 import { BiHelpCircle as TooltipIcon } from "react-icons/bi";
-
 interface ButtonProps {
   className?: string,
   children: any,
